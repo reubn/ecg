@@ -1,0 +1,29 @@
+.app {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: 'SF Pro Display', -apple-system, 'BlinkMacSystemFont', 'SF Pro Text', sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  background: var(--background);
+
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+body {
+  --background: #fff;
+
+  --blood: #b73131;
+  background: var(--background);
+}
