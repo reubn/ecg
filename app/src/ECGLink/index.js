@@ -48,15 +48,18 @@ export default class ECGLink extends WebSocket {
       const positive = string.includes('+')
       const negative = string.includes('-')
 
-      this.leads = {positive, negative}
+      this.setLeads({
+        positive,
+        negative
+      })
     }
   }
 
   readingHandler(reading){
-    this.leads = {
+    this.setLeads({
       positive: true,
       negative: true
-    }
+    })
 
     if(this.dataBuffer.length === this.dataBufferMaxLength) this.dataBuffer.shift()
     this.dataBuffer.push(reading)
@@ -64,9 +67,20 @@ export default class ECGLink extends WebSocket {
     if(this.dataBuffer.length === this.dataBufferMaxLength) this.dataBufferTest.shift()
     this.dataBufferTest.push(QRSDetector(reading, this.dataBufferTest))
 
-    this.dispatchEvent(new CustomEvent('rawData', {detail: reading}))
+    this.dispatchEvent(new CustomEvent('reading', {detail: reading}))
 
     this.batchEventCount = (this.batchEventCount + 1) % this.batchLength
-    if(this.batchEventCount === this.batchLength - 1) this.dispatchEvent(new CustomEvent('data', {detail: {data: this.dataBuffer, maxLength: this.dataBufferMaxLength}}))
+    if(this.batchEventCount === this.batchLength - 1) this.dispatchEvent(new CustomEvent('readings', {detail: {data: this.dataBuffer, maxLength: this.dataBufferMaxLength}}))
+  }
+
+  setLeads({positive, negative}){
+    this.leads = {
+      positive,
+      negative
+    }
+
+    this.dispatchEvent(new CustomEvent('leads', {detail: this.leads}))
   }
 }
+
+export const ecgLink = new ECGLink()
