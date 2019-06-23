@@ -4,6 +4,7 @@ import {ecgLink} from '../../ECGLink'
 
 import Graph from '../Graph'
 import Leads from '../Leads'
+import BPM from '../BPM'
 
 import {app} from './style'
 
@@ -12,6 +13,7 @@ export default () => {
 
   const content = (
     <>
+      <BPM ecgLink={ecgLink} />
       <Graph ecgLink={ecgLink} />
       <Leads ecgLink={ecgLink} />
     </>

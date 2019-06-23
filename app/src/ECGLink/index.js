@@ -1,13 +1,13 @@
 import QRSDetector from '../QRSDetector'
 
 const url = 'ws://ecg.local:81'
-
+let last = -Infinity
 export default class ECGLink extends WebSocket {
   constructor(){
     super(url)
 
     this.dataBuffer = []
-    this.dataBufferTest = []
+    this.dataBufferQRS = []
     this.dataBufferMaxLength = 2000
 
     this.batchLength = 5
@@ -19,6 +19,11 @@ export default class ECGLink extends WebSocket {
       positive: null,
       negative: null
     }
+
+    this.beatsLimit = 4
+    this.lastQRS = 0
+    this.beats = []
+    this.bpm = 0
 
     this.addEventListener('open', this.openHandler)
     this.addEventListener('error', this.closeHandler)
@@ -61,11 +66,18 @@ export default class ECGLink extends WebSocket {
       negative: true
     })
 
+    const now = performance.now()
+    // console.log(Math.round(1000 / (now - last)))
+    last = now
+
     if(this.dataBuffer.length === this.dataBufferMaxLength) this.dataBuffer.shift()
     this.dataBuffer.push(reading)
 
-    if(this.dataBuffer.length === this.dataBufferMaxLength) this.dataBufferTest.shift()
-    this.dataBufferTest.push(QRSDetector(reading, this.dataBufferTest))
+    if(this.dataBuffer.length === this.dataBufferMaxLength) this.dataBufferQRS.shift()
+    const qrsResult = QRSDetector(reading, this.dataBuffer, this.onQRS)
+    this.dataBufferQRS.push(qrsResult)
+
+    if(qrsResult) this.onQRS()
 
     this.dispatchEvent(new CustomEvent('reading', {detail: reading}))
 
@@ -80,6 +92,19 @@ export default class ECGLink extends WebSocket {
     }
 
     this.dispatchEvent(new CustomEvent('leads', {detail: this.leads}))
+  }
+
+  onQRS(){
+    const now = performance.now()
+    const bpm = 60 / (now - this.lastQRS) * 1000
+    this.lastQRS = now
+
+    if(this.beats.length === this.beatsLimit) this.beats.shift()
+    this.beats.push(bpm)
+
+    this.bpm = Math.floor(this.beats.reduce((sum, x) => sum + x, 0) / this.beats.length)
+
+    this.dispatchEvent(new CustomEvent('beat', {detail: this.bpm}))
   }
 }
 

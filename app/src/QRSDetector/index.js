@@ -1,64 +1,40 @@
-import Fili  from 'fili'
-import {ma} from 'moving-averages'
+import {CalcCascades, IirFilter}  from 'fili'
 
-const f1 = 8, f2 = 20, w1 = 35, w2 = 220, offset = 8
+const f1 = 8  // Hz - Fast QRS Detection with an Optimized Knowledge-Based Method
+const f2 = 20 // Hz - Fast QRS Detection with an Optimized Knowledge-Based Method
 
+const windowSize = 300 // Size of window to look back on
+const downPeriod = 60 // Refractory Period in which another positive will not be generated
+const threshold = 0.7 // Threshold of window maximum that must be reached
+const beatsLimit = 4
 
-var iirCalculator = new Fili.CalcCascades();
+const iirCalculator = new CalcCascades()
 
-// calculate filter coefficients
-var iirFilterCoeffs = iirCalculator.bandpass({
-    order: 3, // cascade 3 biquad filters (max: 12)
+const bandpassCoefficients = iirCalculator.bandpass({
+    order: 3,
     characteristic: 'butterworth',
-    Fs: 1000, // sampling frequency
-    Fc: (f2 - f1) / 2 + f1, // cutoff frequency / center frequency for bandpass, bandstop, peak 14
-    BW: (f2 - f1) / 2, // bandwidth only for bandstop and bandpass filters - optional 6
-  });
+    Fs: 1000,
+    Fc: (f2 - f1) / 2 + f1,
+    BW: (f2 - f1) / 2
+  })
 
-// create a filter instance from the calculated coeffs
-var iirFilter = new Fili.IirFilter(iirFilterCoeffs);
+const iirFilter = new IirFilter(bandpassCoefficients)
 
-// let eAL = 1/f1, eAH = 1/f2
-// let eSL = 0, eSH = 0
-// const bandpass = reading => {
-//   const band = f2 - f1
-//
-//   eSL = (eAL * reading) + ((1 - eAL) * eSL)
-//   eSH = (eAH * reading) + ((1 - eAH) * eSH)
-//
-//   // const bandpass = eSH - eSL
-//   // const bandpass =
-//   // const bandpass = Math.max(eSH, Math.min(eSL, reading))
-//   return eSL - eSH
-// }
-const downPeriod = 50
-let on = []
+
+let risingEdgeFilter = []
 let last = -Infinity
 let beats = []
-const beatsLimit = 10
+
 export default (reading, buffer) => {
   const bandpassed = iirFilter.singleStep(reading)
-  // const squared = bandpassed ** 2
-  // const movingAverageQRS = [...buffer.slice(-17), reading].reduce((sum, v) => sum + v, 0) / 18
-  // // console.log(movingAverageQRS)
-  // return movingAverageQRS
-// console.log(bandpassed)
-  const decision = bandpassed > 100
-  if(on.length === downPeriod) on.shift()
-  const downEnough = on.every(x => !x)
-  on.push(decision)
+  const bandpassedBuffer = iirFilter.multiStep(buffer.slice(-windowSize))
+  const max = Math.max(...bandpassedBuffer)
 
-  const finalDecision = decision && downEnough
+  const decision = bandpassed >= max * threshold
 
-  if(finalDecision) {
-    const now = performance.now()
-    const bpm = 60 / (now - last) * 1000
-    last = now
-    if(beats.length === beatsLimit) beats.shift()
-    beats.push(bpm)
+  if(risingEdgeFilter.length === downPeriod) risingEdgeFilter.shift()
+  const isRisingEdge = risingEdgeFilter.every(x => !x)
+  risingEdgeFilter.push(decision)
 
-    console.log(Math.floor(beats.reduce((sum, x) => sum + x, 0) / beats.length))
-  }
-
-  return finalDecision ? 1 : 0
+  return decision && isRisingEdge ? 1 : 0
 }

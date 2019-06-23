@@ -15,12 +15,11 @@ export default ({width=1500, height=500, ecgLink}) => {
     maxLength: 0,
     leads: {}
   })
-  const [{data: testData}, setTestData] = useState({data: []})
+  const [{data: qrsData}, setQRSData] = useState({data: []})
 
   useEffect(() => {
     const update = () => {
-      console.log('update')
-      setTestData({data: ecgLink.dataBufferTest.slice(0, delay)})
+      setQRSData({data: ecgLink.dataBufferQRS.slice(0, delay)})
       setData({
       data: ecgLink.dataBuffer.slice(0, delay),
       maxLength: ecgLink.dataBufferMaxLength + delay,
@@ -48,9 +47,9 @@ export default ({width=1500, height=500, ecgLink}) => {
     domain: extent(data)
   })
 
-  const yScaleTest = scaleLinear({
-    range: [height - yPadding, 0],
-    domain: extent(testData)
+  const yScaleQRS = scaleLinear({
+    range: [(height - yPadding) * 0.25, 0],
+    domain: extent(qrsData)
   })
 
   return (
@@ -58,18 +57,20 @@ export default ({width=1500, height=500, ecgLink}) => {
       <rect x={0} y={0} width={width} height={height} fill={'hsl(1, 100%, 60%)'} rx={14} />
       <Group left={xPadding / 2} top={yPadding / 2}>
         <LinePath
-          data={testData}
-          x={(d, i) => xScale(i)}
-          y={d => yScaleTest(d)}
-          stroke={'rgba(0, 0, 0, 0.25)'}
-          strokeWidth={2}
-          curve={curveMonotoneY}
-        />
-        <LinePath
             data={data}
             x={(d, i) => xScale(i)}
             y={d => yScale(d)}
             stroke={'#fff'}
+            strokeWidth={2}
+            curve={curveMonotoneY}
+          />
+        </Group>
+        <Group left={xPadding / 2} top={height - (yPadding / 3)}>
+          <LinePath
+            data={qrsData}
+            x={(d, i) => xScale(i)}
+            y={d => yScaleQRS(d)}
+            stroke={'rgba(0, 0, 0, 0.25)'}
             strokeWidth={2}
             curve={curveMonotoneY}
           />
