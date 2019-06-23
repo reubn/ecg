@@ -1,14 +1,25 @@
 import QRSDetector from '../QRSDetector'
+import SafariIsNotSpecCompliantSoWeNeedToPolyfillEventTarget from './SafariIsNotSpecCompliantSoWeNeedToPolyfillEventTarget'
 
-const url = 'ws://ecg.local:81'
+let EventTargetValid = EventTarget
+
+try {
+  new EventTargetValid()
+} catch(e){
+  EventTargetValid = SafariIsNotSpecCompliantSoWeNeedToPolyfillEventTarget
+}
+
+const url = window.location.hash ? window.location.hash.slice(1) : 'ws://ecg.local:81'
+
 let last = -Infinity
-export default class ECGLink extends WebSocket {
+export default class ECGLink extends EventTargetValid {
   constructor(){
-    super(url)
+    super()
 
+    this.socket = new WebSocket(url)
     this.dataBuffer = []
     this.dataBufferQRS = []
-    this.dataBufferMaxLength = 2000
+    this.dataBufferMaxLength = 1000
 
     this.batchLength = 5
     this.batchEventCount = 0
@@ -16,19 +27,23 @@ export default class ECGLink extends WebSocket {
     this.connected = false
 
     this.leads = {
-      positive: null,
-      negative: null
+      leftArm: null,
+      rightArm: null,
+      rightLeg: null
     }
+
+    this.leadsFilter = []
+    this.leadsFilterSize = 10
 
     this.beatsLimit = 4
     this.lastQRS = 0
     this.beats = []
     this.bpm = 0
 
-    this.addEventListener('open', this.openHandler)
-    this.addEventListener('error', this.closeHandler)
-    this.addEventListener('message', this.dataHandler)
-    this.addEventListener('close', this.closeHandler)
+    this.socket.addEventListener('open', (...args) => this.openHandler(...args))
+    this.socket.addEventListener('error', (...args) => this.closeHandler(...args))
+    this.socket.addEventListener('message', (...args) => this.dataHandler(...args))
+    this.socket.addEventListener('close', (...args) => this.closeHandler(...args))
   }
 
   openHandler(){
@@ -50,20 +65,30 @@ export default class ECGLink extends WebSocket {
 
   messageHandler(string){
     if(string.startsWith('l')) {
-      const positive = string.includes('+')
-      const negative = string.includes('-')
+      const leftArm = string.includes('+')
+      const rightArm = string.includes('-')
 
-      this.setLeads({
-        positive,
-        negative
+      if(this.leadsFilter.length === this.leadsFilterSize) this.leadsFilter.shift()
+      this.leadsFilter.push({leftArm, rightArm})
+
+      const consistent = this.leadsFilter.every(({leftArm: lA, rightArm: rA, lowReading}) => lowReading || (lA === leftArm) && rA === rightArm)
+      if(consistent) this.setLeads({
+        leftArm,
+        rightArm,
+        rightLeg: !this.leadsFilter.find(({lowReading}) => lowReading)
       })
     }
   }
 
   readingHandler(reading){
-    this.setLeads({
-      positive: true,
-      negative: true
+    if(reading > 1000 || reading < 20) {
+      if(this.leadsFilter.length === this.leadsFilterSize) this.leadsFilter.shift()
+      this.leadsFilter.push({lowReading: true})
+      return
+    }
+    if(this.leadsFilter.every(({leftArm, rightArm, lowReading}) => lowReading || (leftArm && rightArm))) this.setLeads({
+      leftArm: true,
+      rightArm: true
     })
 
     const now = performance.now()
@@ -85,10 +110,11 @@ export default class ECGLink extends WebSocket {
     if(this.batchEventCount === this.batchLength - 1) this.dispatchEvent(new CustomEvent('readings', {detail: {data: this.dataBuffer, maxLength: this.dataBufferMaxLength}}))
   }
 
-  setLeads({positive, negative}){
+  setLeads({leftArm, rightArm, rightLeg=null}){
     this.leads = {
-      positive,
-      negative
+      leftArm,
+      rightArm,
+      rightLeg: rightLeg !== null ? rightLeg : leftArm || rightArm
     }
 
     this.dispatchEvent(new CustomEvent('leads', {detail: this.leads}))
@@ -106,6 +132,11 @@ export default class ECGLink extends WebSocket {
 
     this.dispatchEvent(new CustomEvent('beat', {detail: this.bpm}))
   }
+
+  close(){
+    return this.socket.close()
+  }
 }
 
 export const ecgLink = new ECGLink()
+window.ecgLink = ecgLink

@@ -4,7 +4,7 @@
   "description": "ECG",
   "main": "src/index.js",
   "scripts": {
-    "start": "NODE_ENV=production sudo npx webpack-dev-server",
+    "start": "NODE_ENV=development sudo npx webpack-dev-server",
     "build": "NODE_ENV=production npx webpack"
   },
   "author": "Reuben Eggar",
@@ -13,11 +13,11 @@
     "@babel/polyfill": "^7.4.4",
     "@vx/curve": "0.0.189",
     "@vx/group": "0.0.189",
+    "@vx/responsive": "0.0.189",
     "@vx/scale": "0.0.189",
     "@vx/shape": "0.0.189",
     "d3-array": "^2.2.0",
     "fili": "^2.0.3",
-    "moving-averages": "^4.0.5",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
