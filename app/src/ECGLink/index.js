@@ -71,11 +71,11 @@ export default class ECGLink extends EventTargetValid {
       if(this.leadsFilter.length === this.leadsFilterSize) this.leadsFilter.shift()
       this.leadsFilter.push({leftArm, rightArm})
 
-      const consistent = this.leadsFilter.every(({leftArm: lA, rightArm: rA, lowReading}) => lowReading || (lA === leftArm) && rA === rightArm)
+      const consistent = this.leadsFilter.every(({leftArm: lA, rightArm: rA, lowReading, data}) => lowReading || data || ((lA === leftArm) && rA === rightArm))
       if(consistent) this.setLeads({
         leftArm,
         rightArm,
-        rightLeg: !this.leadsFilter.find(({lowReading}) => lowReading)
+        rightLeg: !this.leadsFilter.find(({lowReading}) => lowReading) && this.leadsFilter.find(({data}) => data)
       })
     }
   }
@@ -86,7 +86,10 @@ export default class ECGLink extends EventTargetValid {
       this.leadsFilter.push({lowReading: true})
       return
     }
-    if(this.leadsFilter.every(({leftArm, rightArm, lowReading}) => lowReading || (leftArm && rightArm))) this.setLeads({
+    if(this.leadsFilter.length === this.leadsFilterSize) this.leadsFilter.shift()
+    this.leadsFilter.push({data: true})
+
+    if(this.leadsFilter.every(({leftArm: lA, rightArm: rA, lowReading, data}) => lowReading || data || ((lA === leftArm) && rA === rightArm))) this.setLeads({
       leftArm: true,
       rightArm: true
     })
