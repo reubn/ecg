@@ -26,14 +26,14 @@ export default class ECGLink extends EventTargetValid {
 
     this.connected = false
 
-    this.leads = {
+    this.electrodes = {
       leftArm: null,
       rightArm: null,
       rightLeg: null
     }
 
-    this.leadsFilter = []
-    this.leadsFilterSize = 150
+    this.electrodesFilter = []
+    this.electrodesFilterSize = 150
 
     this.beatsLimit = 4
     this.lastQRS = 0
@@ -68,21 +68,21 @@ export default class ECGLink extends EventTargetValid {
       const leftArm = string.includes('+')
       const rightArm = string.includes('-')
 
-      if(this.leadsFilter.length === this.leadsFilterSize) this.leadsFilter.shift()
-      this.leadsFilter.push({leftArm, rightArm})
+      if(this.electrodesFilter.length === this.electrodesFilterSize) this.electrodesFilter.shift()
+      this.electrodesFilter.push({leftArm, rightArm})
 
-      const consistant = (this.leadsFilter.length === this.leadsFilterSize) && this.leadsFilter.every(({leftArm: leftA, rightArm: rightA}) => (leftArm === leftA) && (rightA === rightArm))
+      const consistant = (this.electrodesFilter.length === this.electrodesFilterSize) && this.electrodesFilter.every(({leftArm: leftA, rightArm: rightA}) => (leftArm === leftA) && (rightA === rightArm))
 
       if(consistant) {
         // Ground is likely connected
-        this.setLeads({
+        this.setElectrodes({
           leftArm,
           rightArm,
           rightLeg: true
         })
       } else {
         // Ground is likely disconnected
-        this.setLeads({
+        this.setElectrodes({
           rightLeg: false
         })
       }
@@ -91,7 +91,7 @@ export default class ECGLink extends EventTargetValid {
 
   readingHandler(reading){
     if(reading > 1000 || reading < 20) return
-     this.setLeads({
+     this.setElectrodes({
       leftArm: true,
       rightArm: true
     })
@@ -115,14 +115,14 @@ export default class ECGLink extends EventTargetValid {
     if(this.batchEventCount === this.batchLength - 1) this.dispatchEvent(new CustomEvent('readings', {detail: {data: this.dataBuffer, maxLength: this.dataBufferMaxLength}}))
   }
 
-  setLeads({leftArm, rightArm, rightLeg=null}){
-    this.leads = {
+  setElectrodes({leftArm, rightArm, rightLeg=null}){
+    this.electrodes = {
       leftArm,
       rightArm,
       rightLeg: rightLeg !== null ? rightLeg : leftArm || rightArm
     }
 
-    this.dispatchEvent(new CustomEvent('leads', {detail: this.leads}))
+    this.dispatchEvent(new CustomEvent('electrodes', {detail: this.electrodes}))
   }
 
   onQRS(){

@@ -16,18 +16,18 @@ const delay = -20
 const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
   const dataBufferMaxLength = ecgLink.dataBufferMaxLength + delay
 
-  const [{data, qrsData, leads: {rightArm, leftArm, rightLeg}, bpm, connected}, setData] = useState({
+  const [{data, qrsData, electrodes: {rightArm, leftArm, rightLeg}, bpm, connected}, setData] = useState({
     connected: false,
     data: [],
     qrsData: [],
-    leads: {},
+    electrodes: {},
     bpm: 0
   })
   const update = () => {
     setData({
       data: ecgLink.dataBuffer.slice(0, delay),
       qrsData: ecgLink.dataBufferQRS.slice(0, delay),
-      leads: ecgLink.leads,
+      electrodes: ecgLink.electrodes,
       bpm: ecgLink.bpm,
       connected: ecgLink.connected
     })
