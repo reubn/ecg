@@ -57,12 +57,12 @@ void loop() {
         // Serial.println(value);
         webSocket.broadcastTXT(value, strlen(value));
       } else {
-        String leadsString = "l";
-        if(positiveConnected) leadsString += "+";
-        if(negativeConnected) leadsString += "-";
+        String electrodesString = "l";
+        if(positiveConnected) electrodesString += "+";
+        if(negativeConnected) electrodesString += "-";
 
-        char* leads = (char*) leadsString.c_str();
-        webSocket.broadcastTXT(leads, strlen(leads));
+        char* electrodes = (char*) electrodesString.c_str();
+        webSocket.broadcastTXT(electrodes, strlen(electrodes));
       }
     }
 
