@@ -33,7 +33,7 @@ export default class ECGLink extends EventTargetValid {
     }
 
     this.leadsFilter = []
-    this.leadsFilterSize = 10
+    this.leadsFilterSize = 150
 
     this.beatsLimit = 4
     this.lastQRS = 0
@@ -71,25 +71,27 @@ export default class ECGLink extends EventTargetValid {
       if(this.leadsFilter.length === this.leadsFilterSize) this.leadsFilter.shift()
       this.leadsFilter.push({leftArm, rightArm})
 
-      const consistent = this.leadsFilter.every(({leftArm: lA, rightArm: rA, lowReading, data}) => lowReading || data || ((lA === leftArm) && rA === rightArm))
-      if(consistent) this.setLeads({
-        leftArm,
-        rightArm,
-        rightLeg: !this.leadsFilter.find(({lowReading}) => lowReading) && this.leadsFilter.find(({data}) => data)
-      })
+      const consistant = (this.leadsFilter.length === this.leadsFilterSize) && this.leadsFilter.every(({leftArm: leftA, rightArm: rightA}) => (leftArm === leftA) && (rightA === rightArm))
+
+      if(consistant) {
+        // Ground is likely connected
+        this.setLeads({
+          leftArm,
+          rightArm,
+          rightLeg: true
+        })
+      } else {
+        // Ground is likely disconnected
+        this.setLeads({
+          rightLeg: false
+        })
+      }
     }
   }
 
   readingHandler(reading){
-    if(reading > 1000 || reading < 20) {
-      if(this.leadsFilter.length === this.leadsFilterSize) this.leadsFilter.shift()
-      this.leadsFilter.push({lowReading: true})
-      return
-    }
-    if(this.leadsFilter.length === this.leadsFilterSize) this.leadsFilter.shift()
-    this.leadsFilter.push({data: true})
-
-    if(this.leadsFilter.every(({leftArm: lA, rightArm: rA, lowReading, data}) => lowReading || data || ((lA === leftArm) && rA === rightArm))) this.setLeads({
+    if(reading > 1000 || reading < 20) return
+     this.setLeads({
       leftArm: true,
       rightArm: true
     })

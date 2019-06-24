@@ -3,7 +3,6 @@ import React, {Suspense, useEffect} from 'react'
 import {ecgLink} from '../../ECGLink'
 
 import Graph from '../Graph'
-import Leads from '../Leads'
 
 import {app} from './style'
 
