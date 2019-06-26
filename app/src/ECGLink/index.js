@@ -64,14 +64,14 @@ export default class ECGLink extends EventTarget {
       if(this.electrodesFilter.length === this.electrodesFilterSize) this.electrodesFilter.shift()
       this.electrodesFilter.push({leftArm, rightArm})
 
-      const consistant = (this.electrodesFilter.length === this.electrodesFilterSize) && this.electrodesFilter.every(({leftArm: leftA, rightArm: rightA}) => (leftArm === leftA) && (rightA === rightArm))
+      const consistant = this.electrodesFilter.every(({leftArm: leftA, rightArm: rightA}) => (leftArm === leftA) && (rightA === rightArm))
 
       if(consistant) {
         // Ground is likely connected
         this.setElectrodes({
           leftArm,
           rightArm,
-          rightLeg: true
+          // rightLeg: true
         })
       } else {
         // Ground is likely disconnected
@@ -88,10 +88,6 @@ export default class ECGLink extends EventTarget {
       leftArm: true,
       rightArm: true
     })
-
-    const now = performance.now()
-    // console.log(Math.round(1000 / (now - last)))
-    last = now
 
     if(this.dataBuffer.length === this.dataBufferMaxLength) this.dataBuffer.shift()
     this.dataBuffer.push(reading)
