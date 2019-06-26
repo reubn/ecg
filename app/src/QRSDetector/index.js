@@ -3,7 +3,7 @@ import {CalcCascades, IirFilter}  from 'fili'
 const f1 = 8  // Hz - Fast QRS Detection with an Optimized Knowledge-Based Method
 const f2 = 20 // Hz - Fast QRS Detection with an Optimized Knowledge-Based Method
 
-const windowSize = 300 // Size of window to look back on
+const windowSize = 500 // Size of window to look back on
 const downPeriod = 60 // Refractory Period in which another positive will not be generated
 const threshold = 0.7 // Threshold of window maximum that must be reached
 const beatsLimit = 4
