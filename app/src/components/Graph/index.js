@@ -42,7 +42,6 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
     ecgLink.addEventListener('close', () => window.cancelAnimationFrame(update))
   }, [])
 
-  const allConnected = rightArm && leftArm && rightLeg
 
   const xPadding = 100
   const yPadding = 300
