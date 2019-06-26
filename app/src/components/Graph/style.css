@@ -24,9 +24,14 @@
   font-weight: 500;
 }
 
-.diagram {
+.symbol {
   fill: var(--fg);
 }
 .electrode{
   fill: var(--bg);
+}
+
+.message {
+  fill: var(--fg);
+  font-weight: 500;
 }

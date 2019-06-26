@@ -5,11 +5,13 @@ import {LinePath} from '@vx/shape'
 import {curveMonotoneY} from '@vx/curve'
 import {scaleLinear} from '@vx/scale'
 import {withParentSize} from '@vx/responsive'
+import {Text} from '@vx/text'
 import {extent, max, min} from 'd3-array'
 
 import Diagram from './Diagram'
+import Warning from './Warning'
 
-import {graph, bpm as bpmStyle, units, diagram} from './style'
+import {graph, bpm as bpmStyle, units, symbol as symbolStyle, message as messageStyle} from './style'
 
 const delay = -20
 
@@ -59,13 +61,38 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
     range: [(height - yPadding) * 0.25, 0],
     domain: extent(qrsData)
   })
-  // if(rightArm && leftArm) console.log({leftArm, rightArm})
+
+  const allElectrodesConnected = rightArm && leftArm && rightLeg
+  const readyForData = connected && allElectrodesConnected
+
+  const symbol = !connected
+    ? <Warning className={symbolStyle} height={height * 0.4} y={height / 4} />
+    : !allElectrodesConnected
+      ? <Diagram rightArm={rightArm} leftArm={leftArm} rightLeg={rightLeg} className={symbolStyle} height={height / 2} y={height / 4} />
+      : null
+
+  const message = !connected
+    ? 'Could not connect to ECG Unit'
+    : !allElectrodesConnected
+      ? 'Check Electrode Connections'
+      : ''
+
   return (
     <>
-      <section className={bpmStyle}>{bpm}<span className={units}>BPM</span></section>
+      <section className={bpmStyle}>{allElectrodesConnected ? bpm : 0}<span className={units}>BPM</span></section>
       <svg width={width} height={height}>
         <rect x={0} y={0} width={width} height={height} fill={'var(--bg)'} rx={14} />
-        <Diagram rightArm={rightArm} leftArm={leftArm} rightLeg={rightLeg} className={diagram} height={height / 2} y={height / 4} />
+          {symbol}
+          <Text
+            x={width / 2}
+            y={((connected && !allElectrodesConnected) ? 0.875 : 0.825) * height}
+            width={height / 2}
+            verticalAnchor="middle"
+            textAnchor="middle"
+            scaleToFit
+            className={messageStyle}
+          >{message}</Text>
+        }
         <Group left={xPadding / 2} top={yPadding / 2}>
           <LinePath
               data={allConnected ? data : []}
