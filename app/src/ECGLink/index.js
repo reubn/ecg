@@ -11,7 +11,7 @@ export default class ECGLink extends EventTarget {
 
     this.dataBuffer = []
     this.dataBufferQRS = []
-    this.dataBufferMaxLength = 1000
+    this.dataBufferMaxLength = 1500
     this.previousTimestamp = 0
     this.timestampAdjustment = 0
 
