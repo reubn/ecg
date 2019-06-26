@@ -9,7 +9,6 @@ export default class ECGLink extends EventTarget {
   constructor(){
     super()
 
-    this.socket = new WebSocket(url)
     this.dataBuffer = []
     this.dataBufferQRS = []
     this.dataBufferMaxLength = 1000
@@ -33,24 +32,46 @@ export default class ECGLink extends EventTarget {
     this.beats = []
     this.bpm = 0
 
+    this.reconnectDelay = 5000
+
+    this.initiateConnection()
+  }
+
+  initiateConnection(){
+    if(this.blockIfHidden()) return
+
+
+    this.socket = new WebSocket(url)
     this.socket.addEventListener('open', (...args) => this.openHandler(...args))
-    this.socket.addEventListener('error', (...args) => this.closeHandler(...args))
+    this.socket.addEventListener('error', (...args) => this.errorHandler(...args))
     this.socket.addEventListener('message', (...args) => this.dataHandler(...args))
     this.socket.addEventListener('close', (...args) => this.closeHandler(...args))
   }
 
   openHandler(){
     this.connected = true
+
+    this.dispatchEvent(new CustomEvent('open'))
   }
 
-  closeHandler(error){
+  errorHandler(error){
+    const couldNotConnect = !this.connected
+
+    if(couldNotConnect) setTimeout(() => this.initiateConnection(), this.reconnectDelay)
     if(error) console.error(error)
 
+    this.closeHandler()
+  }
+
+  closeHandler(){
     this.connected = false
+
+    this.dispatchEvent(new CustomEvent('close'))
   }
 
   dataHandler({data}){
     const reading = parseInt(data, 10)
+    if(!this.connected) this.openHandler()
 
     if(isNaN(reading)) this.messageHandler(data)
     else this.readingHandler(reading)
@@ -129,6 +150,22 @@ export default class ECGLink extends EventTarget {
 
   close(){
     return this.socket.close()
+  }
+
+  blockIfHidden() {
+    if(document.hidden) {
+      if(this.waitingForVisibility) return true
+
+      this.waitForVisibility = () => {
+        this.waitingForVisibility = false
+        document.removeEventListener('visibilitychange', this.waitForVisibility)
+        this.initiateConnection()
+      }
+
+      this.waitingForVisibility = true
+      document.addEventListener('visibilitychange', this.waitForVisibility)
+      return true
+    }
   }
 }
 
