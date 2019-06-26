@@ -1,18 +1,11 @@
 import QRSDetector from '../QRSDetector'
-import SafariIsNotSpecCompliantSoWeNeedToPolyfillEventTarget from './SafariIsNotSpecCompliantSoWeNeedToPolyfillEventTarget'
 
-let EventTargetValid = EventTarget
-
-try {
-  new EventTargetValid()
-} catch(e){
-  EventTargetValid = SafariIsNotSpecCompliantSoWeNeedToPolyfillEventTarget
-}
+import EventTarget from './EventTarget'
 
 const url = window.location.hash ? window.location.hash.slice(1) : 'ws://ecg.local:81'
 
 let last = -Infinity
-export default class ECGLink extends EventTargetValid {
+export default class ECGLink extends EventTarget {
   constructor(){
     super()
 
