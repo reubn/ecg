@@ -20,14 +20,13 @@ const bandpassCoefficients = iirCalculator.bandpass({
 
 const iirFilter = new IirFilter(bandpassCoefficients)
 
-
 let risingEdgeFilter = []
 let last = -Infinity
 let beats = []
 
 export default (reading, buffer) => {
   const bandpassed = iirFilter.singleStep(reading)
-  const bandpassedBuffer = iirFilter.multiStep(buffer.slice(-windowSize))
+  const bandpassedBuffer = iirFilter.multiStep(buffer.slice(-windowSize).map(([_, reading]) => reading))
   const max = Math.max(...bandpassedBuffer)
 
   const decision = bandpassed >= max * threshold

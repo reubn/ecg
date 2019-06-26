@@ -12,6 +12,8 @@ export default class ECGLink extends EventTarget {
     this.dataBuffer = []
     this.dataBufferQRS = []
     this.dataBufferMaxLength = 1000
+    this.previousTimestamp = 0
+    this.timestampAdjustment = 0
 
     this.batchLength = 5
     this.batchEventCount = 0
@@ -70,11 +72,12 @@ export default class ECGLink extends EventTarget {
   }
 
   dataHandler({data}){
-    const reading = parseInt(data, 10)
     if(!this.connected) this.openHandler()
 
-    if(isNaN(reading)) this.messageHandler(data)
-    else this.readingHandler(reading)
+    const isData = data.includes(',')
+
+    if(isData) this.readingHandler(data)
+    else this.messageHandler(data)
   }
 
   messageHandler(string){
@@ -84,6 +87,8 @@ export default class ECGLink extends EventTarget {
 
       if(this.electrodesFilter.length === this.electrodesFilterSize) this.electrodesFilter.shift()
       this.electrodesFilter.push({leftArm, rightArm})
+
+      if(this.electrodesFilter.find(({data}) => data)) return
 
       const consistant = this.electrodesFilter.every(({leftArm: leftA, rightArm: rightA}) => (leftArm === leftA) && (rightA === rightArm))
 
@@ -103,23 +108,41 @@ export default class ECGLink extends EventTarget {
     }
   }
 
-  readingHandler(reading){
-    if(reading > 1000 || reading < 20) return
-     this.setElectrodes({
+  readingHandler(data){
+    const [rawTimestamp, rawReading] = data.split(',').map(s => parseInt(s, 10))
+
+    let adjustedTimestamp = rawTimestamp + this.timestampAdjustment
+
+    if(adjustedTimestamp < this.previousTimestamp) {
+      console.log('timestamp adjusted')
+      this.timestampAdjustment += 0xffffffff
+      adjustedTimestamp = rawTimestamp + this.timestampAdjustment
+    }
+    this.previousTimestamp = adjustedTimestamp
+
+
+    if(rawReading > 1000 || rawReading < 20) return
+
+    if(this.electrodesFilter.length === this.electrodesFilterSize) this.electrodesFilter.shift()
+    this.electrodesFilter.push({data: true})
+
+    const reading = (rawReading / 2**10) * 3.3
+
+    this.setElectrodes({
       leftArm: true,
       rightArm: true
     })
 
     if(this.dataBuffer.length === this.dataBufferMaxLength) this.dataBuffer.shift()
-    this.dataBuffer.push(reading)
+    this.dataBuffer.push([adjustedTimestamp, reading])
 
     if(this.dataBuffer.length === this.dataBufferMaxLength) this.dataBufferQRS.shift()
     const qrsResult = QRSDetector(reading, this.dataBuffer, this.onQRS)
-    this.dataBufferQRS.push(qrsResult)
+    this.dataBufferQRS.push([adjustedTimestamp, qrsResult])
 
-    if(qrsResult) this.onQRS()
+    if(qrsResult) this.onQRS(adjustedTimestamp)
 
-    this.dispatchEvent(new CustomEvent('reading', {detail: reading}))
+    this.dispatchEvent(new CustomEvent('reading', {detail: [adjustedTimestamp, reading]}))
 
     this.batchEventCount = (this.batchEventCount + 1) % this.batchLength
     if(this.batchEventCount === this.batchLength - 1) this.dispatchEvent(new CustomEvent('readings', {detail: {data: this.dataBuffer, maxLength: this.dataBufferMaxLength}}))
@@ -135,15 +158,14 @@ export default class ECGLink extends EventTarget {
     this.dispatchEvent(new CustomEvent('electrodes', {detail: this.electrodes}))
   }
 
-  onQRS(){
-    const now = performance.now()
-    const bpm = 60 / (now - this.lastQRS) * 1000
-    this.lastQRS = now
+  onQRS(timestamp){
+    const bpm = 60 / (timestamp - this.lastQRS) * 1000 * 1000
+    this.lastQRS = timestamp
 
     if(this.beats.length === this.beatsLimit) this.beats.shift()
     this.beats.push(bpm)
 
-    this.bpm = Math.floor(this.beats.reduce((sum, x) => sum + x, 0) / this.beats.length)
+    this.bpm = this.beats.length === this.beatsLimit ? Math.floor(this.beats.reduce((sum, x) => sum + x, 0) / this.beats.length) : 0
 
     this.dispatchEvent(new CustomEvent('beat', {detail: this.bpm}))
   }

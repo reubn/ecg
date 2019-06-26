@@ -42,23 +42,25 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
     ecgLink.addEventListener('close', () => window.cancelAnimationFrame(update))
   }, [])
 
+  // const xAccessor = ([timestamp]) => timestamp
+  const yAccessor = ([_, reading]) => reading
 
   const xPadding = 100
   const yPadding = 300
 
   const xScale = scaleLinear({
     range: [0, width - xPadding],
-    domain: [0, dataBufferMaxLength]
+    domain: [0, dataBufferMaxLength] // extent(data, xAccessor)
   })
 
   const yScale = scaleLinear({
     range: [height - yPadding, 0],
-    domain: extent(data)
+    domain: extent(data, yAccessor)
   })
 
   const yScaleQRS = scaleLinear({
     range: [(height - yPadding) * 0.25, 0],
-    domain: extent(qrsData)
+    domain: extent(qrsData, yAccessor)
   })
 
   const allElectrodesConnected = rightArm && leftArm && rightLeg
@@ -94,19 +96,21 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
         }
         <Group left={xPadding / 2} top={yPadding / 2}>
           <LinePath
-              data={allConnected ? data : []}
-              x={(d, i) => xScale(i)}
-              y={d => yScale(d)}
-              stroke={'var(--fg)'}
-              strokeWidth={2.5}
-              curve={curveMonotoneY}
+            data={readyForData ? data : []}
+            // x={d => xScale(xAccessor(d))}
+            x={(d, i) => xScale(i)}
+            y={d => yScale(yAccessor(d))}
+            stroke={'var(--fg)'}
+            strokeWidth={2.5}
+            curve={curveMonotoneY}
             />
           </Group>
           <Group left={xPadding / 2} top={height - (yPadding / 3)}>
             <LinePath
-              data={allConnected ? qrsData : []}
+              data={readyForData ? qrsData : []}
+              // x={d => xScale(xAccessor(d))}
               x={(d, i) => xScale(i)}
-              y={d => yScaleQRS(d)}
+              y={d => yScaleQRS(yAccessor(d))}
               stroke={'rgba(0, 0, 0, 0.25)'}
               strokeWidth={2}
               curve={curveMonotoneY}

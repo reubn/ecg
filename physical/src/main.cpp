@@ -9,7 +9,7 @@ WiFiManager wifiManager;
 
 WebSocketsServer webSocket = WebSocketsServer(81);
 
-unsigned long lastReadingTime = millis();
+unsigned long lastReadingTime = micros();
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
 
@@ -45,14 +45,16 @@ void setup() {
 }
 
 void loop() {
-    if((millis() - lastReadingTime) >= (2.77777) && webSocket.connectedClients() > 0){
+    if(((millis() - lastReadingTime) >= 2777) && webSocket.connectedClients() > 0){
 
       bool positiveConnected = (digitalRead(D6) == 0);
       bool negativeConnected = (digitalRead(D7) == 0);
 
        if(positiveConnected && negativeConnected) {
-        String valueString = String(analogRead(A0));
-        lastReadingTime = millis();
+        int valueInt = analogRead(A0);
+        lastReadingTime = micros();
+
+        String valueString = String(lastReadingTime) + String(",") + valueInt;
         char* value = (char*) valueString.c_str();
         // Serial.println(value);
         webSocket.broadcastTXT(value, strlen(value));
