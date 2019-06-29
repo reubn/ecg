@@ -145,7 +145,7 @@ export default class ECGLink extends EventTarget {
     this.dispatchEvent(new CustomEvent('reading', {detail: [adjustedTimestamp, reading]}))
 
     this.batchEventCount = (this.batchEventCount + 1) % this.batchLength
-    if(this.batchEventCount === this.batchLength - 1) this.dispatchEvent(new CustomEvent('readings', {detail: {data: this.dataBuffer, maxLength: this.dataBufferMaxLength}}))
+    if(this.batchEventCount === this.batchLength - 1) this.dispatchEvent(new CustomEvent('readings', {detail: this.dataBuffer}))
   }
 
   setElectrodes({leftArm, rightArm, rightLeg=null}){
