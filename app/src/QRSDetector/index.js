@@ -1,4 +1,5 @@
-import {CalcCascades, IirFilter}  from 'fili'
+import CalcCascades  from 'fili/src/CalcCascades'
+import IirFilter  from 'fili/src/IirFilter'
 
 const f1 = 8  // Hz - Fast QRS Detection with an Optimized Knowledge-Based Method
 const f2 = 20 // Hz - Fast QRS Detection with an Optimized Knowledge-Based Method
