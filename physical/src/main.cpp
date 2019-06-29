@@ -4,15 +4,17 @@
 #include <ESP8266mDNS.h>
 #include <WiFiManager.h>
 #include <WebSocketsServer.h>
+#include <ESP8266WebServer.h>
+#include <FS.h>
 
 WiFiManager wifiManager;
 
+ESP8266WebServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(81);
 
 unsigned long lastReadingTime = micros();
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
-
     switch(type) {
         case WStype_DISCONNECTED:
             Serial.printf("[%u] Disconnected!\n", num);
@@ -28,6 +30,38 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 
 }
 
+String getContentType(String path) {
+  if(path.endsWith(".html") || path.endsWith(".htm")) return "text/html";
+  else if(path.endsWith(".js")) return "application/javascript";
+  else if(path.endsWith(".woff2")) return "font/woff2";
+  else if(path.endsWith(".css")) return "text/css";
+  return "text/plain";
+}
+
+bool readFile(String path){
+  if(path.length() == 0 || path.endsWith("/")) path += "index.html";
+
+  String contentType = getContentType(path);
+  String gzPath = path + ".gz";
+
+  if(SPIFFS.exists(gzPath)){
+    // server.sendHeader(String("Content-Encoding"), String("gzip"));
+    File file = SPIFFS.open(gzPath, "r");
+    size_t sent = server.streamFile(file, contentType);
+    file.close();
+
+    return true;
+  } else if(SPIFFS.exists(path)){  // If the file exists, either as a compressed archive, or normal                                       // Use the compressed version
+    File file = SPIFFS.open(path, "r");                    // Open the file
+    size_t sent = server.streamFile(file, contentType);    // Send it to the client
+    file.close();                                          // Close the file again
+
+    return true;
+  }
+
+  return false;                                          // If the file doesn't exist, return false
+}
+
 void setup() {
     pinMode(D7, INPUT);
     pinMode(D6, INPUT);
@@ -40,8 +74,15 @@ void setup() {
 
     if(MDNS.begin("ecg")) Serial.println("mDNS Running: " "ecg");
 
+    SPIFFS.begin();
+
     webSocket.begin();
     webSocket.onEvent(webSocketEvent);
+
+    server.onNotFound([]() {
+      if(!readFile(server.uri())) server.send(404, "text/plain", "404: Not Found");
+    });
+    server.begin();
 }
 
 void loop() {
@@ -71,4 +112,5 @@ void loop() {
     wifiManager.process();
     MDNS.update();
     webSocket.loop();
+    server.handleClient();
 }
