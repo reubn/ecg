@@ -1,0 +1,20 @@
+@font-face {
+    font-family: 'SFX Pro Rounded';
+    src: url('400.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SFX Pro Rounded';
+    src: url('500.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+}
+/* 
+@font-face {
+    font-family: 'SFX Pro Rounded';
+    src: url('600.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+} */

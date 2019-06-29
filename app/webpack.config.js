@@ -55,8 +55,13 @@ const config = {
         ]
       },
       {
-        test: /\.(png|geojson)$/,
-        use: 'file-loader'
+        test: /\.(woff2)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+              name: '[hash:6].[ext]',
+            }
+        }
       }
     ]
 },

@@ -1,3 +1,5 @@
+@import './fonts';
+
 .app {
   position: absolute;
   width: 100vw;
@@ -10,7 +12,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  font-family: 'SF Pro Rounded', 'SF Pro Display', -apple-system, 'BlinkMacSystemFont', 'SF Pro Text', sans-serif;
+  font-family: 'SF Pro Rounded', 'SFX Pro Rounded', 'SF Pro Display', -apple-system, 'BlinkMacSystemFont', 'SF Pro Text', sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 
@@ -23,7 +25,6 @@
 
 body {
   --background: #fff;
-
-  --blood: #b73131;
+  
   background: var(--background);
 }
