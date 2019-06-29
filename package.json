@@ -2,10 +2,13 @@
   "name": "ecg",
   "version": "0.0.1",
   "description": "ECG",
-  "main": "src/index.js",
+  "main": "app/src/index.js",
   "scripts": {
-    "start": "NODE_ENV=development sudo npx webpack-dev-server",
-    "build": "NODE_ENV=production npx webpack"
+    "start": "cd ./app && NODE_ENV=development sudo npx webpack-dev-server",
+    "build:app": "npm run-script clean && cd ./app && BABEL_ENV=production NODE_ENV=production npx webpack",
+    "clean": "rm -rf ./app/build/*",
+    "copy": "rm -rf ./physical/data/* && cp -a ./app/build/. ./physical/data/",
+    "build:physical": "npm run-script copy && cd physical && pio run -e wemos -t upload && pio run -e wemos -t uploadfs"
   },
   "author": "Reuben Eggar",
   "license": "MIT",
@@ -24,12 +27,14 @@
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
-    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0",
     "autoprefixer": "^9.6.0",
     "babel-loader": "^8.0.6",
+    "babel-preset-minify": "^0.5.0",
+    "compression-webpack-plugin": "^3.0.0",
     "critters-webpack-plugin": "^2.3.0",
     "css-loader": "^3.0.0",
     "cssnano": "^4.1.10",

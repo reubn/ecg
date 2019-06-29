@@ -3,6 +3,7 @@ const {readFileSync} = require('fs')
 
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const Critters = require('critters-webpack-plugin')
+const CompressionPlugin = require('compression-webpack-plugin')
 
 // Ensure Full Errors are Shown
 process.on('unhandledRejection', r => console.error(r))
@@ -14,8 +15,10 @@ const config = {
   entry: ['@babel/polyfill', './src'],
   output: {
     path: resolve('./build'),
-    filename: '[chunkhash].js',
-    libraryTarget: 'umd'
+    filename: '[chunkhash:6].js',
+    chunkFilename: '[chunkhash:6].js',
+    libraryTarget: 'umd',
+    hashDigestLength: 6
   },
   devtool: devMode ? 'source-map' : undefined,
   module: {
@@ -75,6 +78,12 @@ const config = {
       }
     }),
     new Critters(),
+    !devMode ? new CompressionPlugin({
+      filename: '[path].gz[query]',
+      algorithm: 'gzip',
+      test: /.*$/,
+      deleteOriginalAssets: true
+    }) : () => null
   ],
   devServer: devMode ? {
     publicPath: '/',

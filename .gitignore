@@ -3,3 +3,4 @@
 node_modules
 .pio*
 build
+data
