@@ -1,0 +1,17 @@
+.report {
+  width: 297mm;
+  height: 210mm;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.report > svg {
+    margin-top: 7.55mm;
+}
+
+.gridMajor, .gridMinor {
+  shape-rendering: crispEdges;
+}

@@ -18,7 +18,7 @@ const record = (ecgLink, duration) => new Promise(resolve => {
     }
 
     for(const [timestamp, reading] of readings) {
-      if(timestamp <= endTimestamp) localBuffer.push([timestamp, reading])
+      if(timestamp <= endTimestamp) localBuffer.push([timestamp - startTimestamp, reading])
       else return stop()
     }
   }

@@ -15,6 +15,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
     "@vx/curve": "0.0.189",
+    "@vx/grid": "0.0.189",
     "@vx/group": "0.0.189",
     "@vx/responsive": "0.0.189",
     "@vx/scale": "0.0.189",
