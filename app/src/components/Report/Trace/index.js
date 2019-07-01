@@ -10,14 +10,24 @@ import {extent} from 'd3-array'
 
 import {trace, gridMajor, gridMinor, label} from './style'
 
-export default ({duration, voltage, data}) => {
-  const width = 250 // mm
-  const height = (width / 8) // mm
-
-  const [[lowestTimestamp]] = data
-
+export default ({duration, voltage: voltageMinimum, data}) => {
   const xAccessor = ([timestamp]) => timestamp
   const yAccessor = ([_, reading]) => reading
+
+  let [yMin, yMax] = extent(data, yAccessor)
+  let yExtent = yMax - yMin
+  const yMiddle = (yMin + yMax) / 2;
+
+  if(yExtent < voltageMinimum) {
+    ([yMin, yMax] = [yMiddle - (voltageMinimum / 2), yMiddle + (voltageMinimum / 2)])
+    yExtent = voltageMinimum
+  }
+
+
+  const width = (duration / (1000 * 1000)) * 25 // 25mm/s
+  const height = yExtent * 1000 * 10 // 10mm/mv
+
+  const [[lowestTimestamp]] = data
 
   const xScale = scaleLinear({
     range: [0, width],
@@ -26,10 +36,9 @@ export default ({duration, voltage, data}) => {
 
   const yScale = scaleLinear({
     range: [height, 0],
-    domain: [0, voltage]
+    domain: [yMin, yMax]
   })
-  const [yMin, yMax] = yScale.domain()
-  const yExtent = yMax - yMin
+
 
   const xMajorTickInterval = 0.2 * 1000 * 1000 // ns
   const xMajorTickValues = Array.from({length: Math.ceil(duration / xMajorTickInterval)}, (_, i) => lowestTimestamp + (i * xMajorTickInterval))
