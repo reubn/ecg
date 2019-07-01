@@ -5,3 +5,5 @@
 .gridMajor, .gridMinor {
   shape-rendering: geometricprecision;
 }
+
+.label {}
