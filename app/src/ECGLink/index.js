@@ -128,8 +128,8 @@ export default class ECGLink extends EventTarget {
     if(this.electrodesFilter.length === this.electrodesFilterSize) this.electrodesFilter.shift()
     this.electrodesFilter.push({data: true})
 
-    //  219.5㏀ + 89.5㏀
-    //  AD8232 SparkFun Breakout Board = 1100x
+    //  (219.5㏀ + 89.5㏀) / 89.5㏀ = 3.453V
+    //  AD8232 SparkFun Breakout Board Gain = 1100x
     const reading = ((rawReading / 2**10) * 3.453) / 1100
 
     this.setElectrodes({
