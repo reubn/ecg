@@ -1,0 +1,7 @@
+.trace {
+    margin-top: 7.55mm;
+}
+
+.gridMajor, .gridMinor {
+  shape-rendering: crispEdges;
+}
