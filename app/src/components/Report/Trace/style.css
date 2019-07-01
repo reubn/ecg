@@ -3,5 +3,5 @@
 }
 
 .gridMajor, .gridMinor {
-  shape-rendering: crispEdges;
+  shape-rendering: geometricprecision;
 }
