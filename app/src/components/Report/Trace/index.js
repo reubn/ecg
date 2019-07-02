@@ -53,7 +53,7 @@ export default ({duration, voltage: voltageMinimum, data}) => {
   const yMinorTickValues = Array.from({length: Math.ceil(yExtent / yMinorTickInterval)}, (_, i) => yMin + (i * yMinorTickInterval))
 
   const secondsTickInterval = 1 * 1000 * 1000 // ns
-  const secondsTickValues = Array.from({length: Math.ceil(xExtent / secondsTickInterval) + 1}, (_, i) =>  xMin + (i * secondsTickInterval))
+  const secondsTickValues = Array.from({length: Math.ceil(xExtent / secondsTickInterval) + 1}, (_, i) => Math.min(xScale.invert(width), xMin + (i * secondsTickInterval)))
 
   return (
     <svg width={`${width + 5}mm`} height={`${height + 5}mm`} viewBox={`0 0 ${width + 5} ${height + 5}`} className={trace}>
@@ -101,7 +101,7 @@ export default ({duration, voltage: voltageMinimum, data}) => {
             tickLength={0}
             top={height}
             scale={xScale}
-            tickFormat={d => `${Math.floor(d / (1000 * 1000))}s`}
+            tickFormat={d => `${Math.round(d / (1000 * 1000))}s`}
             stroke="#CCCCCC"
             strokeWidth={0.25}
             tickValues={secondsTickValues}
