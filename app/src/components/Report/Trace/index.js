@@ -8,7 +8,7 @@ import {Grid, GridColumns} from '@vx/grid'
 import {AxisBottom} from '@vx/axis'
 import {extent} from 'd3-array'
 
-import {trace, gridMajor, gridMinor, label} from './style'
+import {trace, gridMajor, gridMinor, label, line} from './style'
 
 export default ({duration, voltage: voltageMinimum, data}) => {
   const xAccessor = ([timestamp]) => timestamp
@@ -121,6 +121,7 @@ export default ({duration, voltage: voltageMinimum, data}) => {
           stroke={'#CD0A20'}
           strokeWidth={0.25}
           curve={curveMonotoneY}
+          className={line}
           />
           <rect x={0} y={0} width={width} height={height} fill={'none'} strokeWidth={0.25} stroke={'#CCCCCC'} />
         </Group>
