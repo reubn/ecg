@@ -2,7 +2,7 @@ import React from 'react'
 
 import Trace from './Trace'
 
-import {report} from './style'
+import {report, wrapper} from './style'
 
 const Report = ({recording}) => {
   const traceDuration = 10 * 1000 * 1000 // ns
@@ -26,7 +26,9 @@ const Report = ({recording}) => {
 
   return (
     <section className={report}>
+    <span className={wrapper}>
       {traceData.map((data, i) => <Trace key={i} duration={traceDuration} voltage={traceVoltage} data={data} />)}
+      </span>
     </section>
   )
 }

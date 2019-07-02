@@ -7,3 +7,18 @@
   align-items: center;
   justify-content: center;
 }
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+
+@media print {
+  @page {
+    size: A4 landscape;
+    marks: none;
+  }
+}
