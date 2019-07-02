@@ -23,15 +23,15 @@ export default ({duration, voltage: voltageMinimum, data}) => {
     yExtent = voltageMinimum
   }
 
+  const [xMin, xMax] = extent(data, xAccessor)
+  const xExtent = xMax - xMin
 
-  const width = (duration / (1000 * 1000)) * 25 // 25mm/s
-  const height = yExtent * 1000 * 10 // 10mm/mv
-
-  const [[lowestTimestamp]] = data
+  const width = (xExtent / (1000 * 1000)) * 25 // 25mm/s
+  const height = yExtent * 1000 * 10 // 10mm/mV
 
   const xScale = scaleLinear({
     range: [0, width],
-    domain: [lowestTimestamp, lowestTimestamp + duration]
+    domain: [xMin, xMax]
   })
 
   const yScale = scaleLinear({
@@ -41,10 +41,10 @@ export default ({duration, voltage: voltageMinimum, data}) => {
 
 
   const xMajorTickInterval = 0.2 * 1000 * 1000 // ns
-  const xMajorTickValues = Array.from({length: Math.ceil(duration / xMajorTickInterval)}, (_, i) => lowestTimestamp + (i * xMajorTickInterval))
+  const xMajorTickValues = Array.from({length: Math.ceil(xExtent / xMajorTickInterval)}, (_, i) => xMin + (i * xMajorTickInterval))
 
   const xMinorTickInterval = xMajorTickInterval / 5 // ns
-  const xMinorTickValues = Array.from({length: Math.ceil(duration / xMinorTickInterval)}, (_, i) => lowestTimestamp + (i * xMinorTickInterval))
+  const xMinorTickValues = Array.from({length: Math.ceil(xExtent / xMinorTickInterval)}, (_, i) => xMin + (i * xMinorTickInterval))
 
   const yMajorTickInterval = 0.5 / 1000 // V
   const yMajorTickValues = Array.from({length: Math.ceil(yExtent / yMajorTickInterval)}, (_, i) => yMin + (i * yMajorTickInterval))
@@ -53,7 +53,7 @@ export default ({duration, voltage: voltageMinimum, data}) => {
   const yMinorTickValues = Array.from({length: Math.ceil(yExtent / yMinorTickInterval)}, (_, i) => yMin + (i * yMinorTickInterval))
 
   const secondsTickInterval = 1 * 1000 * 1000 // ns
-  const secondsTickValues = Array.from({length: Math.ceil(duration / secondsTickInterval) + 1}, (_, i) => lowestTimestamp + (i * secondsTickInterval))
+  const secondsTickValues = Array.from({length: Math.ceil(xExtent / secondsTickInterval) + 1}, (_, i) =>  xMin + (i * secondsTickInterval))
 
   return (
     <svg width={`${width + 5}mm`} height={`${height + 5}mm`} viewBox={`0 0 ${width + 5} ${height + 5}`} className={trace}>
