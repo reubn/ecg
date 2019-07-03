@@ -1,14 +1,22 @@
-export default (orig, hz) => {
-  const data = [...orig]
-  const [[firstTimestamp]] = data
-  const [lastTimestamp] = data[data.length - 1]
-  const increment = (1 * 1000 * 1000) / hz
+import {extent} from 'd3-array'
 
+export default (orig, hz) => {
+  const data = orig.slice()
+  const [firstTimestamp, lastTimestamp] = extent(data, ([ts]) => ts)
+  const extentTs = lastTimestamp - firstTimestamp
+  const increment = (1 * 1000 * 1000) / hz
   const output = []
 
   let currentTimestamp = firstTimestamp
   while(currentTimestamp <= lastTimestamp){
-    const oneTooFar = data.findIndex(([ts]) => ts >= currentTimestamp)
+    const minimumPossiblePosition = Math.floor(((currentTimestamp - firstTimestamp) / extentTs) * data.length)
+    let oneTooFar
+    for(let i = minimumPossiblePosition; i < data.length; i++) {
+      if(data[i][0] >= currentTimestamp){
+        oneTooFar = i
+        break
+      }
+    }
     if(data[oneTooFar][0] === currentTimestamp) output.push(data[oneTooFar])
     else {
       const oneTooSoon = oneTooFar - 1
