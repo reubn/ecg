@@ -65,6 +65,18 @@ export default ({duration, data}) => {
 
   const secondsTickValues = Array.from({length: Math.ceil(xExtent / secondsTickInterval) + 1}, (_, i) => Math.min(xScale.invert(width), xMin + (i * secondsTickInterval)))
 
+  const calibrationStart = [
+    xMax - 2 * xMajorTickInterval - xMinorTickInterval, yMax - (3 * yMajorTickInterval)
+  ]
+  const calibrationTraceData = [
+    [+xMinorTickInterval, 0],
+    [0, +2 * yMajorTickInterval],
+    [+2 * yMajorTickInterval, 0],
+    [+xMajorTickInterval, 0],
+    [0, -2 * yMajorTickInterval],
+    [+xMinorTickInterval, 0]
+  ].reduce((pre, [dx, dy], _i, _a, [x, y] = pre.pop()) => [...pre, [x, y], [x + dx, y + dy]], [calibrationStart])
+
   return (
     <svg width={`${width + 5}mm`} height={`${height + 5}mm`} viewBox={`0 0 ${width + 5} ${height + 5}`} className={trace}>
       <Group top={1} left={1}>
@@ -123,6 +135,14 @@ export default ({duration, data}) => {
               fontWeight: 600,
               textAnchor: 'start'
             })}
+          />
+        <LinePath
+          data={calibrationTraceData}
+          x={d => xScale(xAccessor(d))}
+          y={d => yScale(yAccessor(d))}
+          stroke={'#666666'}
+          strokeWidth={0.25}
+          className={line}
           />
         <LinePath
           data={data}
