@@ -1,33 +1,30 @@
 import React from 'react'
+import {extent} from 'd3-array'
 
-import Trace from './Trace'
+import Trace, {xMaxExtent, xAccessor} from './Trace'
 
 import {report, wrapper} from './style'
 
 const Report = ({recording}) => {
-  const traceDuration = 10 * 1000 * 1000 // ns
-  const traceVoltage = 3 / 1000 // V
+  const [min, max] = extent(recording, xAccessor)
+  const difference = max - min
 
-  const lowest = recording[0][0]
-  const highest = recording[recording.length - 1][0]
-  const difference = highest - lowest
+  const numberOfTraces = Math.ceil(difference / xMaxExtent)
 
-  const numberOfTraces = Math.ceil(difference / traceDuration)
-
-  const traceData = Array.from({length: numberOfTraces}, (_, i) => {
-    const lowerBound = i * traceDuration
-    const upperBound = (i + 1) * traceDuration
+  const traces = Array.from({length: numberOfTraces}, (_, i) => {
+    const lowerBound = i * xMaxExtent
+    const upperBound = (i + 1) * xMaxExtent
 
     const lowerIndex = recording.findIndex(([ts]) => ts >= lowerBound)
     const upperIndex = recording.findIndex(([ts]) => ts > upperBound)
 
-    return recording.slice(lowerIndex, upperIndex)
+    return <Trace key={i} data={recording.slice(lowerIndex, upperIndex)} />
   })
 
   return (
     <section className={report}>
     <span className={wrapper}>
-      {traceData.map((data, i) => <Trace key={i} duration={traceDuration} voltage={traceVoltage} data={data} />)}
+      {traces}
       </span>
     </section>
   )

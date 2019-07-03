@@ -8,26 +8,44 @@ import {Grid, GridColumns} from '@vx/grid'
 import {AxisBottom} from '@vx/axis'
 import {extent} from 'd3-array'
 
+import {floor, ceil} from './round'
+
 import {trace, gridMajor, gridMinor, label, line} from './style'
 
-export default ({duration, voltage: voltageMinimum, data}) => {
-  const xAccessor = ([timestamp]) => timestamp
-  const yAccessor = ([_, reading]) => reading
+const xAccessor = ([timestamp]) => timestamp
+const yAccessor = ([_, reading]) => reading
 
-  let [yMin, yMax] = extent(data, yAccessor)
+const xScaleFactor = 25 / (1000 * 1000) // 25mm/s
+const yScaleFactor = 1000 * 10 // 10mm/mV
+
+const xMajorTickInterval = 0.2 * 1000 * 1000 // ns
+const xMinorTickInterval = xMajorTickInterval / 5 // ns
+
+const yMajorTickInterval = 0.5 / 1000 // V
+const yMinorTickInterval = yMajorTickInterval / 5 // V
+
+const secondsTickInterval = 1 * 1000 * 1000 // ns
+
+const xMaxExtent = 10 * 1000 * 1000 // ns
+const yMinExtent = 3 / 1000 // V
+
+export default ({duration, data}) => {
+  const [yMinBase, yMaxBase] = extent(data, yAccessor)
+  let [yMin, yMax] = [floor(yMinBase, yMajorTickInterval), ceil(yMaxBase, yMajorTickInterval)]
   let yExtent = yMax - yMin
   const yMiddle = (yMin + yMax) / 2;
 
-  if(yExtent < voltageMinimum) {
-    ([yMin, yMax] = [yMiddle - (voltageMinimum / 2), yMiddle + (voltageMinimum / 2)])
-    yExtent = voltageMinimum
+  if(yExtent < yMinExtent) {
+    ([yMin, yMax] = [yMiddle - (yMinExtent / 2), yMiddle + (yMinExtent / 2)])
+    yExtent = yMinExtent
   }
 
-  const [xMin, xMax] = extent(data, xAccessor)
+  const [xMinBase, xMaxBase] = extent(data, xAccessor)
+  const [xMin, xMax] = [floor(xMinBase, secondsTickInterval), ceil(xMaxBase, secondsTickInterval)]
   const xExtent = xMax - xMin
 
-  const width = (xExtent / (1000 * 1000)) * 25 // 25mm/s
-  const height = yExtent * 1000 * 10 // 10mm/mV
+  const width = xExtent * xScaleFactor
+  const height = yExtent * yScaleFactor
 
   const xScale = scaleLinear({
     range: [0, width],
@@ -39,20 +57,12 @@ export default ({duration, voltage: voltageMinimum, data}) => {
     domain: [yMin, yMax]
   })
 
-
-  const xMajorTickInterval = 0.2 * 1000 * 1000 // ns
   const xMajorTickValues = Array.from({length: Math.ceil(xExtent / xMajorTickInterval)}, (_, i) => xMin + (i * xMajorTickInterval))
-
-  const xMinorTickInterval = xMajorTickInterval / 5 // ns
   const xMinorTickValues = Array.from({length: Math.ceil(xExtent / xMinorTickInterval)}, (_, i) => xMin + (i * xMinorTickInterval))
 
-  const yMajorTickInterval = 0.5 / 1000 // V
   const yMajorTickValues = Array.from({length: Math.ceil(yExtent / yMajorTickInterval)}, (_, i) => yMin + (i * yMajorTickInterval))
-
-  const yMinorTickInterval = yMajorTickInterval / 5 // V
   const yMinorTickValues = Array.from({length: Math.ceil(yExtent / yMinorTickInterval)}, (_, i) => yMin + (i * yMinorTickInterval))
 
-  const secondsTickInterval = 1 * 1000 * 1000 // ns
   const secondsTickValues = Array.from({length: Math.ceil(xExtent / secondsTickInterval) + 1}, (_, i) => Math.min(xScale.invert(width), xMin + (i * secondsTickInterval)))
 
   return (
@@ -128,3 +138,4 @@ export default ({duration, voltage: voltageMinimum, data}) => {
     </svg>
   )
 }
+ export {xAccessor, xMaxExtent}
