@@ -10,13 +10,11 @@ export default (orig, hz) => {
   let currentTimestamp = firstTimestamp
   while(currentTimestamp <= lastTimestamp){
     const minimumPossiblePosition = Math.floor(((currentTimestamp - firstTimestamp) / extentTs) * data.length)
+    
     let oneTooFar
-    for(let i = minimumPossiblePosition; i < data.length; i++) {
-      if(data[i][0] >= currentTimestamp){
-        oneTooFar = i
-        break
-      }
-    }
+    for(let i = minimumPossiblePosition; i < data.length && !oneTooFar; i++) if(data[i][0] >= currentTimestamp) oneTooFar = i
+    if(!oneTooFar) oneTooFar = data.length - 1
+
     if(data[oneTooFar][0] === currentTimestamp) output.push(data[oneTooFar])
     else {
       const oneTooSoon = oneTooFar - 1
