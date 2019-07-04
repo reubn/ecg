@@ -11,3 +11,24 @@
 .line {
   stroke-linejoin: round;
 }
+
+:export {
+  traceColour: #CD0A20;
+  traceStrokeWidth: 0.25;
+  calibrationColour: #666666;
+  calibrationStrokeWidth: 0.25;
+
+  gridMajorColour: #CCCCCC;
+  gridMinorColour: #E5E5E5;
+  gridStrokeWidth: 0.25;
+
+  axisTickHeight: 3;
+
+  labelColour: #CCCCCC;
+  labelTransform: translate(0.5, -7);
+  labelFontWeight: 600;
+  labelFontSize: 2;
+  labelTextAnchor: start;
+
+  svgPadding: 5;
+}

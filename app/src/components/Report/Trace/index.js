@@ -6,11 +6,32 @@ import {curveMonotoneY} from '@vx/curve'
 import {scaleLinear} from '@vx/scale'
 import {Grid, GridColumns} from '@vx/grid'
 import {AxisBottom} from '@vx/axis'
+import {Text} from '@vx/text'
 import {extent} from 'd3-array'
 
 import {floor, ceil} from './round'
 
-import {trace, gridMajor, gridMinor, label, line} from './style'
+import {
+  trace,
+  gridMajor,
+  gridMinor,
+  label,
+  line,
+  gridMajorColour,
+  gridMinorColour,
+  gridStrokeWidth,
+  axisTickHeight,
+  labelColour,
+  labelFontSize,
+  labelTransform,
+  labelFontWeight,
+  labelTextAnchor,
+  traceColour,
+  traceStrokeWidth,
+  calibrationColour,
+  calibrationStrokeWidth,
+  svgPadding
+} from './style'
 
 const xAccessor = ([timestamp]) => timestamp
 const yAccessor = ([_, reading]) => reading
@@ -78,43 +99,38 @@ export default ({last, data}) => {
   ].reduce((pre, [dx, dy], _i, _a, [x, y] = pre.pop()) => [...pre, [x, y], [x + dx, y + dy]], [calibrationStart])
 
   return (
-    <svg width={`${width + 5}mm`} height={`${height + 5}mm`} viewBox={`0 0 ${width + 5} ${height + 5}`} className={trace}>
+    <svg width={`${width + +svgPadding}mm`} height={`${height + +svgPadding}mm`} viewBox={`0 0 ${width + +svgPadding} ${height + +svgPadding}`} className={trace}>
       <Group top={1} left={1}>
         <Grid
-          left={0}
-          top={0}
           className={gridMinor}
           xScale={xScale}
           yScale={yScale}
           width={width}
           height={height}
-          strokeWidth={0.25}
-          stroke="#E5E5E5"
+          strokeWidth={gridStrokeWidth}
+          stroke={gridMinorColour}
           rowTickValues={yMinorTickValues}
           columnTickValues={xMinorTickValues}
         />
         <Grid
-          left={0}
-          top={0}
           className={gridMajor}
           xScale={xScale}
           yScale={yScale}
           width={width}
           height={height}
-          strokeWidth={0.25}
-          stroke="#CCCCCC"
+          strokeWidth={gridStrokeWidth}
+          stroke={gridMajorColour}
           rowTickValues={yMajorTickValues}
           columnTickValues={xMajorTickValues}
         />
         <GridColumns
-          left={0}
           top={height}
           className={gridMajor}
           scale={xScale}
           width={width}
-          height={3}
-          strokeWidth={0.25}
-          stroke="#CCCCCC"
+          height={+axisTickHeight}
+          strokeWidth={gridStrokeWidth}
+          stroke={gridMajorColour}
           tickValues={secondsTickValues}
         />
         <AxisBottom
@@ -124,36 +140,34 @@ export default ({last, data}) => {
             top={height}
             scale={xScale}
             tickFormat={d => `${Math.round(d / (1000 * 1000))}s`}
-            stroke="#CCCCCC"
-            strokeWidth={0.25}
             tickValues={secondsTickValues}
             tickClassName={label}
-            tickTransform="translate(0.5, -7)"
+            tickTransform={labelTransform}
             tickLabelProps={(value, index) => ({
-              fill: "#CCCCCC",
-              fontSize: 2,
-              fontWeight: 600,
-              textAnchor: 'start'
+              fill: labelColour,
+              fontSize: labelFontSize,
+              fontWeight: labelFontWeight,
+              textAnchor: labelTextAnchor
             })}
           />
         {last && <LinePath
           data={calibrationTraceData}
           x={d => xScale(xAccessor(d))}
           y={d => yScale(yAccessor(d))}
-          stroke={'#666666'}
-          strokeWidth={0.25}
+          stroke={calibrationColour}
+          strokeWidth={calibrationStrokeWidth}
           className={line}
           />}
         <LinePath
           data={data}
           x={d => xScale(xAccessor(d))}
           y={d => yScale(yAccessor(d))}
-          stroke={'#CD0A20'}
-          strokeWidth={0.25}
+          stroke={traceColour}
+          strokeWidth={traceStrokeWidth}
           curve={curveMonotoneY}
           className={line}
           />
-          <rect x={0} y={0} width={width} height={height} fill={'none'} strokeWidth={0.25} stroke={'#CCCCCC'} />
+          <rect width={width} height={height} fill="none" strokeWidth={gridStrokeWidth} stroke={gridMajorColour} />
         </Group>
     </svg>
   )
