@@ -100,7 +100,7 @@ export default ({last, data}) => {
 
   return (
     <svg width={`${width + +svgPadding}mm`} height={`${height + +svgPadding}mm`} viewBox={`0 0 ${width + +svgPadding} ${height + +svgPadding}`} className={trace}>
-      <Group top={1} left={1}>
+      <Group top={gridStrokeWidth * 2} left={gridStrokeWidth * 2}>
         <Grid
           className={gridMinor}
           xScale={xScale}
@@ -172,4 +172,4 @@ export default ({last, data}) => {
     </svg>
   )
 }
- export {xAccessor, xMaxExtent}
+ export {xAccessor, xMaxExtent, xScaleFactor, yScaleFactor}

@@ -1,12 +1,10 @@
 .trace {
-    margin-top: 7.55mm;
+    margin: 3.75mm 0;
 }
 
 .gridMajor, .gridMinor {
   shape-rendering: geometricprecision;
 }
-
-.label {}
 
 .line {
   stroke-linejoin: round;

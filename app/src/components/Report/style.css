@@ -15,6 +15,32 @@
   justify-content: center;
 }
 
+.footer, .header {
+  font-size: 3mm;
+  user-select: text;
+  color: #555;
+  width: 250mm;
+}
+.header{
+  display: flex;
+  justify-content: space-between;
+}
+.number {
+  font-weight: 400;
+  color: #444;
+}
+.unit {
+  font-size: 3mm;
+  font-weight: 500;
+  color: #555;
+  margin-left: 0.15mm;
+}
+.seperator{
+  font-size: 3mm;
+  font-weight: 500;
+  color: #666;
+}
+
 
 @media print {
   @page {

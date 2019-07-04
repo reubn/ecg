@@ -4,6 +4,7 @@ const {readFileSync} = require('fs')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const Critters = require('critters-webpack-plugin')
 const CompressionPlugin = require('compression-webpack-plugin')
+const {DefinePlugin} = require('webpack')
 
 // Ensure Full Errors are Shown
 process.on('unhandledRejection', r => console.error(r))
@@ -69,6 +70,10 @@ const config = {
     ]
 },
   plugins: [
+    new DefinePlugin({
+      'NODE_ENV': devMode ? 'development' : 'production',
+      __version__: JSON.stringify(require('../package.json').version)
+    }),
     new HtmlWebpackPlugin({
       title: 'ECG',
       meta: {
