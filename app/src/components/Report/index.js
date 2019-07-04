@@ -18,7 +18,7 @@ const Report = ({recording}) => {
     const lowerIndex = recording.findIndex(([ts]) => ts >= lowerBound)
     const upperIndex = recording.findIndex(([ts]) => ts > upperBound)
 
-    return <Trace key={i} data={recording.slice(lowerIndex, upperIndex)} />
+    return <Trace key={i} last={i == numberOfTraces - 1} data={recording.slice(lowerIndex, upperIndex)} />
   })
 
   return (

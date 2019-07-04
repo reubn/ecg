@@ -29,7 +29,7 @@ const secondsTickInterval = 1 * 1000 * 1000 // ns
 const xMaxExtent = 10 * 1000 * 1000 // ns
 const yMinExtent = 3 / 1000 // V
 
-export default ({duration, data}) => {
+export default ({last, data}) => {
   const [yMinBase, yMaxBase] = extent(data, yAccessor)
   let [yMin, yMax] = [floor(yMinBase, yMajorTickInterval), ceil(yMaxBase, yMajorTickInterval)]
   let yExtent = yMax - yMin
@@ -136,14 +136,14 @@ export default ({duration, data}) => {
               textAnchor: 'start'
             })}
           />
-        <LinePath
+        {last && <LinePath
           data={calibrationTraceData}
           x={d => xScale(xAccessor(d))}
           y={d => yScale(yAccessor(d))}
           stroke={'#666666'}
           strokeWidth={0.25}
           className={line}
-          />
+          />}
         <LinePath
           data={data}
           x={d => xScale(xAccessor(d))}
