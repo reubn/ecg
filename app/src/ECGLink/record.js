@@ -6,24 +6,22 @@ const record = (ecgLink, duration) => new Promise(resolve => {
   let endTimestamp = null
 
   const stop = () => {
-    ecgLink.removeEventListener('readings', handler)
+    ecgLink.removeEventListener('reading', handler)
     resolve(localBuffer)
   }
 
-  const handler = ({detail: readings}) => {
-    if(!startTimestamp){
+  const handler = ({detail: [timestamp, reading]}) => {
+    if(startTimestamp === null){
       // console.log(readings)
-      startTimestamp = readings[0][0]
+      startTimestamp = timestamp
       endTimestamp = startTimestamp + durationNS
     }
-
-    for(const [timestamp, reading] of readings) {
+// console.log({startTimestamp, endTimestamp, timestamp})
       if(timestamp <= endTimestamp) localBuffer.push([timestamp - startTimestamp, reading])
       else return stop()
-    }
   }
 
-  ecgLink.addEventListener('readings', handler)
+  ecgLink.addEventListener('reading', handler)
 })
 
 window.record = record
