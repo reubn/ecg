@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 
 import {Group} from '@vx/group'
 import {LinePath} from '@vx/shape'
-import {curveMonotoneY} from '@vx/curve'
+import {curveMonotoneY, curveBasis} from '@vx/curve'
 import {scaleLinear} from '@vx/scale'
 import {withParentSize} from '@vx/responsive'
 import {Text} from '@vx/text'
@@ -101,8 +101,8 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
             x={(d, i) => xScale(i)}
             y={d => yScale(yAccessor(d))}
             stroke={'var(--fg)'}
-            strokeWidth={2.5}
-            curve={curveMonotoneY}
+            strokeWidth={1.25}
+            curve={curveBasis}
             />
           </Group>
           <Group left={xPadding / 2} top={height - (yPadding / 3)}>
@@ -112,7 +112,7 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
               x={(d, i) => xScale(i)}
               y={d => yScaleQRS(yAccessor(d))}
               stroke={'rgba(0, 0, 0, 0.25)'}
-              strokeWidth={2}
+              strokeWidth={1}
               curve={curveMonotoneY}
             />
         </Group>
