@@ -6,7 +6,7 @@ import Trace, {xAccessor, xMaxExtent, xScaleFactor, yScaleFactor} from './Trace'
 
 import {report, wrapper, number, unit, header, footer, seperator} from './style'
 
-const Report = ({recording, hz}) => {
+const Report = ({recording/*, hz*/}) => {
   const [min, max] = extent(recording, xAccessor)
   const difference = max - min
 
@@ -31,7 +31,7 @@ const Report = ({recording, hz}) => {
     <section className={report}>
     <span className={wrapper}>
       <header className={header}>
-        <span>{'Phoebe Archer'}</span>
+        <span>{'Reuben'}</span>
         <span>Recorded at {correctedHours + format(startDate, ':mm aa — EEEE d')}<sup>{ordinalIndicator}</sup>{format(startDate, ' LLLL yyyy')}</span>
       </header>
       {traces}
@@ -39,9 +39,9 @@ const Report = ({recording, hz}) => {
         <span className={number}>{1000 * 1000 * xScaleFactor}</span><span className={unit}>mm/s</span>
         <span className={seperator}> x </span>
         <span className={number}>{1 / 1000 * yScaleFactor}</span><span className={unit}>mm/mV</span>
-        <span className={seperator}> - </span>
-        <span className={number}>{hz}</span><span className={unit}>Hz</span>
-        <span className={seperator}>; </span>
+        <span className={seperator}> — </span>
+        {/*<span className={number}>{hz}</span><span className={unit}>Hz</span>
+        <span className={seperator}>; </span>*/}
         <span className={unit}>v</span><span className={number}>{__version__}</span>
         <span className={seperator}> — </span>
         <span>The waveform seen is similar to a Lead I ECG</span>
