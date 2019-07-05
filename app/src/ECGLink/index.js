@@ -84,8 +84,8 @@ export default class ECGLink extends EventTarget {
 
   messageHandler(string){
     if(string.startsWith('l')) {
-      const leftArm = string.includes('+')
-      const rightArm = string.includes('-')
+      const leftArm = string.includes('-')
+      const rightArm = string.includes('+')
 
       if(this.electrodesFilter.length === this.electrodesFilterSize) this.electrodesFilter.shift()
       this.electrodesFilter.push({leftArm, rightArm})
