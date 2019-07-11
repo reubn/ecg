@@ -20,14 +20,12 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
             Serial.printf("[%u] Disconnected!\n", num);
             break;
         case WStype_CONNECTED:
-            {
-                IPAddress ip = webSocket.remoteIP(num);
-                Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-        				// send message to client
-        				webSocket.sendTXT(num, "Hello");
-            }
+          {
+            IPAddress ip = webSocket.remoteIP(num);
+            Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+    				webSocket.sendTXT(num, "Hello");
+          }
     }
-
 }
 
 String getContentType(String path) {
@@ -45,28 +43,26 @@ bool readFile(String path){
   String gzPath = path + ".gz";
 
   if(SPIFFS.exists(gzPath)){
-    // server.sendHeader(String("Content-Encoding"), String("gzip"));
     File file = SPIFFS.open(gzPath, "r");
     size_t sent = server.streamFile(file, contentType);
     file.close();
 
     return true;
-  } else if(SPIFFS.exists(path)){  // If the file exists, either as a compressed archive, or normal                                       // Use the compressed version
-    File file = SPIFFS.open(path, "r");                    // Open the file
-    size_t sent = server.streamFile(file, contentType);    // Send it to the client
-    file.close();                                          // Close the file again
+  } else if(SPIFFS.exists(path)){
+    File file = SPIFFS.open(path, "r");
+    size_t sent = server.streamFile(file, contentType);
+    file.close();
 
     return true;
   }
 
-  return false;                                          // If the file doesn't exist, return false
+  return false;
 }
 
 void setup() {
     pinMode(D7, INPUT);
     pinMode(D6, INPUT);
 
-    // Serial.begin(921600);
     Serial.begin(9600);
 
     wifiManager.setConfigPortalBlocking(false);
@@ -97,7 +93,6 @@ void loop() {
 
         String valueString = String(lastReadingTime) + String(",") + valueInt;
         char* value = (char*) valueString.c_str();
-        // Serial.println(value);
         webSocket.broadcastTXT(value, strlen(value));
       } else {
         String electrodesString = "l";
