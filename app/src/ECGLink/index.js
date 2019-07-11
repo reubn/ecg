@@ -44,7 +44,6 @@ export default class ECGLink extends EventTarget {
   initiateConnection(){
     if(this.blockIfHidden()) return
 
-
     this.socket = new WebSocket(url)
     this.socket.addEventListener('open', (...args) => this.openHandler(...args))
     this.socket.addEventListener('error', (...args) => this.errorHandler(...args))
@@ -130,7 +129,7 @@ export default class ECGLink extends EventTarget {
 
     //  (219.5㏀ + 89.5㏀) / 89.5㏀ = 3.453V
     //  AD8232 SparkFun Breakout Board Gain = 1100x
-    const reading = ((rawReading / 2**10) * 3.453) / 1100
+    const reading = ((rawReading / 2**10) * 3.453) / 1100 // Convert to millivolts
 
     this.setElectrodes({
       leftArm: true,
