@@ -1,4 +1,4 @@
-const record = (ecgLink, duration) => new Promise(resolve => {
+const record = (ecgLink, duration=10) => new Promise(resolve => {
   const localBuffer = []
 
   const durationNS = duration * 1000 * 1000
@@ -7,16 +7,15 @@ const record = (ecgLink, duration) => new Promise(resolve => {
 
   const stop = () => {
     ecgLink.removeEventListener('reading', handler)
+    ecgLink.dispatchEvent(new CustomEvent('recordingComplete', {detail: localBuffer}))
     resolve(localBuffer)
   }
 
   const handler = ({detail: [timestamp, reading]}) => {
     if(startTimestamp === null){
-      // console.log(readings)
       startTimestamp = timestamp
       endTimestamp = startTimestamp + durationNS
     }
-// console.log({startTimestamp, endTimestamp, timestamp})
       if(timestamp <= endTimestamp) localBuffer.push([timestamp - startTimestamp, reading])
       else return stop()
   }
@@ -24,5 +23,4 @@ const record = (ecgLink, duration) => new Promise(resolve => {
   ecgLink.addEventListener('reading', handler)
 })
 
-window.record = record
 export default record

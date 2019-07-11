@@ -40,6 +40,10 @@ export default class ECGLink extends EventTarget {
     this.initiateConnection()
   }
 
+  record(duration) {
+    return record(this, duration)
+  }
+
   initiateConnection(){
     if(this.blockIfHidden()) return
 
