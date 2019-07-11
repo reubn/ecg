@@ -101,7 +101,7 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
             x={(d, i) => xScale(i)}
             y={d => yScale(yAccessor(d))}
             stroke={'var(--fg)'}
-            strokeWidth={1.25}
+            strokeWidth={2.5}
             curve={curveBasis}
             />
           </Group>
@@ -112,7 +112,7 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
               x={(d, i) => xScale(i)}
               y={d => yScaleQRS(yAccessor(d))}
               stroke={'rgba(0, 0, 0, 0.25)'}
-              strokeWidth={1}
+              strokeWidth={2}
               curve={curveMonotoneY}
             />
         </Group>
