@@ -14,6 +14,8 @@ WebSocketsServer webSocket = WebSocketsServer(81);
 
 unsigned long lastReadingTime = micros();
 
+float nanoSecondInterval = (1000 * 1000) / 360
+
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
     switch(type) {
         case WStype_DISCONNECTED:
@@ -82,7 +84,7 @@ void setup() {
 }
 
 void loop() {
-    if(((millis() - lastReadingTime) >= 2777) && webSocket.connectedClients() > 0){
+    if(((millis() - lastReadingTime) >= nanoSecondInterval) && webSocket.connectedClients() > 0){
 
       bool rightArmConnected = (digitalRead(D6) == 0);
       bool leftArmConnected = (digitalRead(D7) == 0);
