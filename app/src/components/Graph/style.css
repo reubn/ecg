@@ -35,3 +35,7 @@
   fill: var(--fg);
   font-weight: 500;
 }
+
+.dot {
+  fill: var(--fg);
+}

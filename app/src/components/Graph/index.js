@@ -11,7 +11,7 @@ import {extent, max, min} from 'd3-array'
 import Diagram from './Diagram'
 import Warning from './Warning'
 
-import {graph, bpm as bpmStyle, units, symbol as symbolStyle, message as messageStyle} from './style'
+import {graph, bpm as bpmStyle, units, symbol as symbolStyle, message as messageStyle, dot} from './style'
 
 const delay = -20
 
@@ -104,6 +104,7 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
             strokeWidth={2.5}
             curve={curveBasis}
             />
+            {readyForData && <circle className={dot} cx={xScale(data.length - 1)} cy={yScale(yAccessor(data[data.length - 1]))} r="3" />}
           </Group>
           <Group left={xPadding / 2} top={height - (yPadding / 3)}>
             <LinePath
