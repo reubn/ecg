@@ -5,20 +5,16 @@ import {ecgLink} from '../../ECGLink'
 import Graph from '../Graph'
 import Report from '../Report'
 
-import noisySample from './noisySample'
 import {app} from './style'
 
 export default () => {
   useEffect(() => () => ecgLink.close(), [])
+  const [reportVisibile, setReportVisibile] = useState(false)
+  const [recording, setRecording] = useState({})
 
-  const [test, setTest] = useState(true)
-  const [recording, setRecording] = useState(noisySample)
-
-  window.setTest = setTest.bind(null, true)
-  window.setRecording = setRecording
   const content = (
     <>
-      {test ? <Report recording={recording} /> : <Graph ecgLink={ecgLink} />}
+      {reportVisibile ? <Report recording={recording} /> : <Graph ecgLink={ecgLink} />}
     </>
   )
 
