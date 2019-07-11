@@ -14,7 +14,7 @@ WebSocketsServer webSocket = WebSocketsServer(81);
 
 unsigned long lastReadingTime = micros();
 
-float nanoSecondInterval = (1000 * 1000) / 360
+float nanoSecondInterval = (1000 * 1000) / 360;
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
     switch(type) {
