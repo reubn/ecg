@@ -4,7 +4,7 @@ import EventTarget from './EventTarget'
 
 import record from './record'
 
-const url = window.location.hash ? window.location.hash.slice(1) : 'ws://ecg.local:81'
+const url = window.location.hash ? window.location.hash.slice(1) : `ws://${window.location.hostname}:81`
 
 let last = -Infinity
 export default class ECGLink extends EventTarget {
