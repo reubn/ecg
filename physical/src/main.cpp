@@ -84,10 +84,10 @@ void setup() {
 void loop() {
     if(((millis() - lastReadingTime) >= 2777) && webSocket.connectedClients() > 0){
 
-      bool positiveConnected = (digitalRead(D6) == 0);
-      bool negativeConnected = (digitalRead(D7) == 0);
+      bool rightArmConnected = (digitalRead(D6) == 0);
+      bool leftArmConnected = (digitalRead(D7) == 0);
 
-       if(positiveConnected && negativeConnected) {
+       if(rightArmConnected && leftArmConnected) {
         int valueInt = analogRead(A0);
         lastReadingTime = micros();
 
@@ -96,8 +96,8 @@ void loop() {
         webSocket.broadcastTXT(value, strlen(value));
       } else {
         String electrodesString = "l";
-        if(positiveConnected) electrodesString += "+";
-        if(negativeConnected) electrodesString += "-";
+        if(rightArmConnected) electrodesString += "+";
+        if(leftArmConnected) electrodesString += "-";
 
         char* electrodes = (char*) electrodesString.c_str();
         webSocket.broadcastTXT(electrodes, strlen(electrodes));
