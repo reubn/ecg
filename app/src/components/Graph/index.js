@@ -8,6 +8,7 @@ import {withParentSize} from '@vx/responsive'
 import {Text} from '@vx/text'
 import {extent, max, min} from 'd3-array'
 
+import Record from './Record'
 import Diagram from './Diagram'
 import Warning from './Warning'
 
@@ -80,6 +81,7 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
 
   return (
     <>
+      <Record ecgLink={ecgLink} />
       <section className={bpmStyle}>{allElectrodesConnected ? bpm : 0}<span className={units}>BPM</span></section>
       <svg width={width} height={height}>
         <rect x={0} y={0} width={width} height={height} fill={'var(--bg)'} rx={14} />

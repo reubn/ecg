@@ -1,0 +1,40 @@
+.recordContainer {
+  position: absolute;
+  z-index: 1;
+  left: 2rem;
+  top: 2rem;
+  font-size: 1.1rem;
+  text-align: left;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.middleDot {
+  r: 12;
+  transition: all 0.1s ease-in;
+}
+
+.length {
+  opacity: 0;
+  transition: all 0.1s ease-in 0.05s;
+  font-weight: 500;
+  fill: var(--bg);
+}
+
+.recordContainer:hover {
+  cursor: pointer;
+
+  & .middleDot {
+    r: 15;
+  }
+
+  & .length {
+    opacity: 1;
+  }
+}
+
+.recordIcon {
+  height: 2.5rem;
+  margin-right: 0.5rem;
+}

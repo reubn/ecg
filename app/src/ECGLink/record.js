@@ -7,6 +7,7 @@ const record = (ecgLink, duration=10) => new Promise(resolve => {
 
   const stop = () => {
     ecgLink.removeEventListener('reading', handler)
+    ecgLink.recordingStatus = false
     ecgLink.dispatchEvent(new CustomEvent('recordingComplete', {detail: localBuffer}))
     resolve(localBuffer)
   }
@@ -16,10 +17,14 @@ const record = (ecgLink, duration=10) => new Promise(resolve => {
       startTimestamp = timestamp
       endTimestamp = startTimestamp + durationNS
     }
-      if(timestamp <= endTimestamp) localBuffer.push([timestamp - startTimestamp, reading])
-      else return stop()
+
+    ecgLink.dispatchEvent(new CustomEvent('recordingProgress', {detail: (timestamp - startTimestamp) / (1000 * 1000)}))
+    if(timestamp <= endTimestamp) localBuffer.push([timestamp - startTimestamp, reading])
+    else return stop()
   }
 
+  ecgLink.recordingStatus = true
+  ecgLink.dispatchEvent(new CustomEvent('recordingStarted'))
   ecgLink.addEventListener('reading', handler)
 })
 

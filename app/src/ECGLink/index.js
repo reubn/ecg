@@ -35,6 +35,8 @@ export default class ECGLink extends EventTarget {
     this.beats = []
     this.bpm = 0
 
+    this.recordingStatus = false
+
     this.reconnectDelay = 5000
 
     this.initiateConnection()

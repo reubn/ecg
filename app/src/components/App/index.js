@@ -8,9 +8,16 @@ import Report from '../Report'
 import {app} from './style'
 
 export default () => {
-  useEffect(() => () => ecgLink.close(), [])
   const [reportVisibile, setReportVisibile] = useState(false)
-  const [recording, setRecording] = useState({})
+  const [recording, setRecording] = useState([])
+
+  useEffect(() => {
+    ecgLink.addEventListener('recordingComplete', ({detail}) => {
+      setRecording(detail)
+      setReportVisibile(true)
+    })
+    return () => ecgLink.close()
+  }, [])
 
   const content = (
     <>
