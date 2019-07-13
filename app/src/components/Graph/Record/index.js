@@ -3,7 +3,7 @@ import {Text} from '@vx/text'
 
 import {recordContainer, recordIcon, middleDot, length, active} from './style'
 
-const recordingDuration = 30
+const recordingDuration = 10
 
 export default ({ecgLink}) => {
   const [recordingStatus, setRecordingStatus] = useState(ecgLink.recordingStatus ? 'recording' : 'dormant')
@@ -62,18 +62,23 @@ export default ({ecgLink}) => {
   return (
     <section className={recordContainerClass} onClick={onClick}>
       <svg viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" className={recordIcon}>
-        <circle id="Oval" fill="#FFFFFF" cx="22" cy="22" className={middleDot} style={{r: recordingStatus !== 'dormant' ? 15 : undefined}} />
+      <defs>
+        <mask id="cut">
+          <rect width="100%" height="100%" fill="white" /><Text
+        x={22}
+        y={22}
+        width={16}
+        style={{fontSize: '1.1rem'}}
+        verticalAnchor="middle"
+        textAnchor="middle"
+        className={length}
+        style={{opacity: recordingStatus !== 'dormant' ? 1 : undefined}}
+      >{number}</Text>
+      </mask>
+    </defs>
+        <circle id="Oval" mask="url(#cut)" fill="#FFFFFF" cx="22" cy="22" className={middleDot} style={{r: recordingStatus !== 'dormant' ? 15 : undefined}} />
         <circle id="Oval" fill="none" stroke="#FFFFFF" strokeWidth="4" cx="22" cy="22" r="20" />
-        <Text
-          x={22}
-          y={22}
-          width={16}
-          style={{fontSize: '1.1rem'}}
-          verticalAnchor="middle"
-          textAnchor="middle"
-          className={length}
-          style={{opacity: recordingStatus !== 'dormant' ? 1 : undefined}}
-        >{number}</Text>
+
       </svg>
       {message}
     </section>

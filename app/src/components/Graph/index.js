@@ -84,7 +84,6 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
       <Record ecgLink={ecgLink} />
       <section className={bpmStyle}>{allElectrodesConnected ? bpm : 0}<span className={units}>BPM</span></section>
       <svg width={width} height={height}>
-        <rect x={0} y={0} width={width} height={height} fill={'var(--bg)'} rx={14} />
           {symbol}
           <Text
             x={width / 2}

@@ -19,7 +19,7 @@
   opacity: 0;
   transition: all 0.1s ease-in 0.05s;
   font-weight: 500;
-  fill: var(--bg);
+  fill: black;
 }
 
 .recordContainer:hover {

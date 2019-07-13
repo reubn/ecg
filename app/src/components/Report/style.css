@@ -25,6 +25,13 @@
   display: flex;
   justify-content: space-between;
 }
+
+.header > *:first-of-type {
+  font-size: 4mm;
+  font-weight: 400;
+  color: #666;
+}
+
 .number {
   font-weight: 400;
   color: #444;
@@ -41,6 +48,9 @@
   color: #666;
 }
 
+.bold {
+  font-weight: 500;
+}
 
 @media print {
   @page {

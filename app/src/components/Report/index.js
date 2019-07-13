@@ -4,7 +4,7 @@ import {format} from 'date-fns'
 
 import Trace, {xAccessor, xMaxExtent, xScaleFactor, yScaleFactor} from './Trace'
 
-import {report, wrapper, number, unit, header, footer, seperator} from './style'
+import {report, wrapper, number, unit, header, footer, seperator, bold} from './style'
 
 const Report = ({recording/*, hz*/}) => {
   const [min, max] = extent(recording, xAccessor)
@@ -31,7 +31,7 @@ const Report = ({recording/*, hz*/}) => {
     <section className={report}>
     <span className={wrapper}>
       <header className={header}>
-        <span>{'Reuben'}</span>
+        <span>Reuben <b className={bold}>Eggar</b></span>
         <span>Recorded at {correctedHours + format(startDate, ':mm aa — EEEE d')}<sup>{ordinalIndicator}</sup>{format(startDate, ' LLLL yyyy')}</span>
       </header>
       {traces}
