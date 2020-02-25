@@ -2,9 +2,11 @@ import React from 'react'
 import {extent} from 'd3-array'
 import {format} from 'date-fns'
 
+import {saveAs} from 'file-saver'
+
 import Trace, {xAccessor, xMaxExtent, xScaleFactor, yScaleFactor} from './Trace'
 
-import {report, wrapper, number, unit, header, footer, seperator, bold} from './style'
+import {report, wrapper, number, unit, header, footer, seperator, bold, print, download} from './style'
 
 const Report = ({recording/*, hz*/}) => {
   const [min, max] = extent(recording, xAccessor)
@@ -27,26 +29,36 @@ const Report = ({recording/*, hz*/}) => {
 
   const ordinalIndicator = format(startDate, 'do').slice(-2)
 
+  const downloadCSV = () => {
+    const csvString = 'timestamp(ns),value(mV)\r\n' + recording.map(pair => pair.join(`,`)).join('\r\n')
+
+    const blob = new Blob([csvString], {type : 'text/csv'})
+
+    saveAs(blob, `${startDate.toString()}.ecg.csv`)
+  }
+
   return (
     <section className={report}>
-    <span className={wrapper}>
-      <header className={header}>
-        <span>Reuben <b className={bold}>Eggar</b></span>
-        <span>Recorded at {correctedHours + format(startDate, ':mm aa — EEEE d')}<sup>{ordinalIndicator}</sup>{format(startDate, ' LLLL yyyy')}</span>
-      </header>
-      {traces}
-      <footer className={footer}>
-        <span className={number}>{1000 * 1000 * xScaleFactor}</span><span className={unit}>mm/s</span>
-        <span className={seperator}> x </span>
-        <span className={number}>{1 / 1000 * yScaleFactor}</span><span className={unit}>mm/mV</span>
-        <span className={seperator}> — </span>
-        {/*<span className={number}>{hz}</span><span className={unit}>Hz</span>
-        <span className={seperator}>; </span>*/}
-        <span className={unit}>v</span><span className={number}>{__version__}</span>
-        <span className={seperator}> — </span>
-        <span>The waveform seen is similar to a Lead I ECG</span>
-      </footer>
-    </span>
+      <span className={download} onClick={downloadCSV}>Export</span>
+      <span className={print} onClick={() => window.print()}>Print</span>
+      <span className={wrapper}>
+        <header className={header}>
+          <span>Reuben <b className={bold}>Eggar</b></span>
+          <span>Recorded at {correctedHours + format(startDate, ':mm aa — EEEE d')}<sup>{ordinalIndicator}</sup>{format(startDate, ' LLLL yyyy')}</span>
+        </header>
+        {traces}
+        <footer className={footer}>
+          <span className={number}>{1000 * 1000 * xScaleFactor}</span><span className={unit}>mm/s</span>
+          <span className={seperator}> x </span>
+          <span className={number}>{1 / 1000 * yScaleFactor}</span><span className={unit}>mm/mV</span>
+          <span className={seperator}> — </span>
+          {/*<span className={number}>{hz}</span><span className={unit}>Hz</span>
+          <span className={seperator}>; </span>*/}
+          <span className={unit}>v</span><span className={number}>{__version__}</span>
+          <span className={seperator}> — </span>
+          <span>The waveform seen is similar to a Lead I ECG.</span>
+        </footer>
+      </span>
     </section>
   )
 }

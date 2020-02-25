@@ -94,7 +94,7 @@ const config = {
     publicPath: '/',
     contentBase: './build',
     compress: true,
-    host: 'reumac.local',
+    host: '::',
     disableHostCheck: true,
     port: 80,
     inline: true,

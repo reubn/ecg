@@ -201,3 +201,15 @@ export default class ECGLink extends EventTarget {
 
 export const ecgLink = new ECGLink()
 window.ecgLink = ecgLink
+
+// Play back sample
+
+// import sample from './samples/richard'
+// window.sample = sample
+
+// var i = 0, s=sample[0][0]; setInterval(() => {
+// const [ts, v] = sample[i]
+// ecgLink.dataHandler({data: `${ts + sample.slice(-1)[0][0] * s},${((v * 1100) / 3.453) * 2**10}`})
+// i = (i + 1) % (sample.length - 1)
+// if(!i) s++;
+// }, 0.1)

@@ -1,20 +1,36 @@
-.graph {
-  --fg: #fff;
-  --bg: transparent;
+.sizing {
   max-height: 600px;
   width: 90vmax;
   height: 80vh;
   position: absolute;
-  color: var(--fg);
-  background: linear-gradient(45deg, hsl(200, 100%, 50%), hsl(220, 100%, 50%));
+}
+
+.graph {
+  width: 100%;
+  height: 100%;
+
   border-radius: 14px;
+
+  --fg: hsl(205, 100%, 50%);
+  --bg: white;
+
+  color: var(--fg);
+  background: white;
+
+  & .ready{
+    --fg: #fff;
+    --bg: transparent;
+
+    color: var(--fg);
+    background: linear-gradient(45deg, hsl(200, 100%, 50%), hsl(220, 100%, 50%));
+  }
 }
 
 .bpm {
   position: absolute;
   z-index: 1;
   right: 2rem;
-  top: 2rem;
+  top: 1rem;
   font-size: 5rem;
   text-align: right;
   font-weight: 400;

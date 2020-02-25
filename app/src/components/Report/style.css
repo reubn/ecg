@@ -6,6 +6,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  cursor: pointer;
 }
 
 .wrapper {
@@ -52,9 +54,29 @@
   font-weight: 500;
 }
 
+.download {
+  position: absolute;
+  bottom: 4mm;
+  left: 4mm;
+  font-size: 5mm;
+  color: #666;
+}
+
+.print {
+  position: absolute;
+  bottom: 4mm;
+  right: 4mm;
+  font-size: 5mm;
+  color: #666;
+}
+
 @media print {
   @page {
     size: A4 landscape;
     marks: none;
+  }
+
+  .print, .download {
+    display: none;
   }
 }

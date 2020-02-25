@@ -4,6 +4,7 @@ import {ecgLink} from '../../ECGLink'
 
 import Graph from '../Graph'
 import Report from '../Report'
+import Footer from '../Footer'
 
 import {app} from './style'
 
@@ -22,6 +23,7 @@ export default () => {
   const content = (
     <>
       {reportVisibile ? <Report recording={recording} /> : <Graph ecgLink={ecgLink} />}
+      <Footer />
     </>
   )
 

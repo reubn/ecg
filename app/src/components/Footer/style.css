@@ -1,0 +1,60 @@
+.footer {
+  position: absolute;
+  bottom: 0.5rem;
+  display: block;
+  width: 100%;
+  text-align: center;
+  height: 0.75rem;
+  text-decoration: none;
+  transition: all ease-in-out 0.2s;
+}
+
+.footer:hover {
+  height: 1.5rem;
+  animation-duration: 1.25s;
+  animation-name: pulse;
+  animation-iteration-count: infinite;
+  animation-delay: 0.25s;
+}
+
+.heart {
+  fill: #ececec;
+  cursor: pointer;
+  transition: all ease-in-out 0.2s;
+}
+
+.footer:hover .heart {
+  fill: hsl(345, 100%, 50%);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  20% {
+    transform: scale(0.75);
+  }
+
+  40% {
+    transform: scale(1);
+  }
+
+  60% {
+    transform: scale(0.75);
+  }
+
+  80% {
+    transform: scale(0.75);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media print {
+  .footer {
+    display: none;
+  }
+}

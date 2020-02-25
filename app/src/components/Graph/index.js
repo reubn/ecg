@@ -12,7 +12,7 @@ import Record from './Record'
 import Diagram from './Diagram'
 import Warning from './Warning'
 
-import {graph, bpm as bpmStyle, units, symbol as symbolStyle, message as messageStyle, dot} from './style'
+import {sizing, graph, bpm as bpmStyle, units, symbol as symbolStyle, message as messageStyle, dot, ready as readyStyle} from './style'
 
 const delay = -20
 
@@ -65,7 +65,7 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
   })
 
   const allElectrodesConnected = rightArm && leftArm && rightLeg
-  const readyForData = connected && allElectrodesConnected
+  const ready = connected && allElectrodesConnected && data.length
 
   const symbol = !connected
     ? <Warning className={symbolStyle} height={height * 0.4} y={height / 4} />
@@ -79,10 +79,11 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
       ? 'Check Electrode Connections'
       : ''
 
+  const containerStyle = `${graph} ${ready ? readyStyle : ''}`
   return (
-    <>
-      <Record ecgLink={ecgLink} />
-      <section className={bpmStyle}>{allElectrodesConnected ? bpm : 0}<span className={units}>BPM</span></section>
+    <section className={containerStyle}>
+      {ready && <Record ecgLink={ecgLink} />}
+      {connected && <section className={bpmStyle}>{allElectrodesConnected ? bpm : 0}<span className={units}>BPM</span></section>}
       <svg width={width} height={height}>
           {symbol}
           <Text
@@ -97,7 +98,7 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
         }
         <Group left={xPadding / 2} top={yPadding / 2}>
           <LinePath
-            data={readyForData ? data : []}
+            data={ready ? data : []}
             // x={d => xScale(xAccessor(d))}
             x={(d, i) => xScale(i)}
             y={d => yScale(yAccessor(d))}
@@ -105,11 +106,11 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
             strokeWidth={2.5}
             curve={curveBasis}
             />
-            {readyForData && <circle className={dot} cx={xScale(data.length - 1)} cy={yScale(yAccessor(data[data.length - 1]))} r="3" />}
+            {ready && <circle className={dot} cx={xScale(data.length - 1)} cy={yScale(yAccessor(data[data.length - 1]))} r="3" />}
           </Group>
           <Group left={xPadding / 2} top={height - (yPadding / 3)}>
             <LinePath
-              data={readyForData ? qrsData : []}
+              data={ready ? qrsData : []}
               // x={d => xScale(xAccessor(d))}
               x={(d, i) => xScale(i)}
               y={d => yScaleQRS(yAccessor(d))}
@@ -119,10 +120,10 @@ const Graph = ({parentWidth: width, parentHeight: height, ecgLink}) => {
             />
         </Group>
       </svg>
-    </>
+    </section>
   )
 }
 
 const GraphWithParentSize = withParentSize(Graph)
 
-export default props => <section className={graph}><GraphWithParentSize {...props} /></section>
+export default props => <section className={sizing}><GraphWithParentSize {...props} /></section>
