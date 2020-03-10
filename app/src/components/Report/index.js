@@ -56,7 +56,9 @@ const Report = ({recording/*, hz*/}) => {
           <span className={seperator}>; </span>*/}
           <span className={unit}>v</span><span className={number}>{__version__}</span>
           <span className={seperator}> — </span>
-          <span>The waveform seen is similar to a Lead I ECG.</span>
+          <span>This waveform is indictaive only, and should not be the basis for any form of medical advice</span>
+          <span className={seperator}> — </span>
+          <span>ecg.reuben.science</span>
         </footer>
       </span>
     </section>
