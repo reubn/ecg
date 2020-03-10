@@ -11,7 +11,7 @@
 }
 
 :export {
-  traceColour: hsl(205, 100%, 50%);
+  traceColour: hsl(1, 100%, 57%);
   traceStrokeWidth: 0.25;
   calibrationColour: #666666;
   calibrationStrokeWidth: 0.25;

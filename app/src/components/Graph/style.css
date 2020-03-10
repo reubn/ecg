@@ -11,7 +11,7 @@
 
   border-radius: 14px;
 
-  --fg: hsl(205, 100%, 50%);
+  --fg: hsl(1, 100%, 57%);
   --bg: white;
 
   color: var(--fg);
@@ -22,7 +22,7 @@
     --bg: transparent;
 
     color: var(--fg);
-    background: linear-gradient(45deg, hsl(200, 100%, 50%), hsl(220, 100%, 50%));
+    background: linear-gradient(45deg, hsl(1, 100%, 57%), hsl(340, 100%, 50%));
   }
 }
 
