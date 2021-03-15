@@ -10,7 +10,7 @@
     "copy": "rm -rf ./physical/data/* && cp -a ./app/build/. ./physical/data/",
     "build:physical": "npm run-script copy && cd physical && pio run -e wemos -t upload && pio run -e wemos -t uploadfs"
   },
-  "author": "Reuben Eggar",
+  "author": "Reuben",
   "license": "MIT",
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
