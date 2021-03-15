@@ -43,7 +43,7 @@ const Report = ({recording/*, hz*/}) => {
       <span className={print} onClick={() => window.print()}>Print</span>
       <span className={wrapper}>
         <header className={header}>
-          <span>Reuben <b className={bold}>Eggar</b></span>
+          <span>Reuben <b className={bold}>E</b></span>
           <span>Recorded at {correctedHours + format(startDate, ':mm aa — EEEE d')}<sup>{ordinalIndicator}</sup>{format(startDate, ' LLLL yyyy')}</span>
         </header>
         {traces}
